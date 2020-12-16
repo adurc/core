@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "private": "false",
   "files": [
     "dist",
     "README.md"
@@ -16,9 +15,6 @@
     "release": "standard-version",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
     "test": "jest"
   },
   "repository": {
