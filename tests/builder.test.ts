@@ -1,3 +1,0 @@
-describe('data server builder', () => {
-    //
-});
