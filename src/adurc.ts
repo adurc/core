@@ -1,16 +1,15 @@
 import { AdurcContext } from './interfaces/context';
-import Driver, { CRUDA, IDriverAggregateRes, IDriverCreateUpdateRes, TDriverDeleteRes, TDriverReadRes } from './bedrock/driver';
+import { AdurcDriver } from './driver';
 import { AdurcDirectiveDefinition, AdurcModel } from './interfaces/model';
 import { AdurcOptions } from './interfaces/options';
 import { ProjectionInfo } from './interfaces/projection';
-import Logger from './logger';
-const log = Logger('core:server');
+import { IDriverCreateUpdateRes, TDriverReadRes, TDriverDeleteRes, IDriverAggregateRes } from './interfaces/driver';
 
 export class Adurc {
-    private _defaultSource: Driver;
+    private _defaultSource: AdurcDriver;
     private _models: AdurcModel[] = [];
     private _mapModelsByName: Map<string, AdurcModel> = new Map();
-    private _mapModelSource: Map<string, Driver> = new Map();
+    private _mapModelSource: Map<string, AdurcDriver> = new Map();
     private _dsContext: AdurcContext;
 
     public get models(): ReadonlyArray<AdurcModel> {
@@ -27,9 +26,8 @@ export class Adurc {
     }
 
     public async init(): Promise<void> {
-        log.info('Initializing server.');
         this._defaultSource = this.options.sources.get(this.options.defaultSource);
-        
+
         for (const introspector of this.options.introspectors) {
             const modelsIntrospected = await introspector.introspect();
             for (const model of modelsIntrospected) {
@@ -43,67 +41,38 @@ export class Adurc {
 
         const sourcesIterator = this.options.sources.values();
         for (const driver of sourcesIterator) {
-            driver.setContext(this._dsContext);
-            await driver.init();
+            await driver.setContext(this._dsContext);
         }
     }
 
-    public async createMany(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        log.info('CreateMany called');
-        return await this.execute('create', projection) as IDriverCreateUpdateRes;
-    }
-
-    public async createOne(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        log.info('createOne called');
-        return await this.execute('create', projection) as IDriverCreateUpdateRes;
+    public async create(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
+        const model = this.getModel(projection.name);
+        const driver = this.getModelDriver(model.name);
+        return await driver.create(projection);
     }
 
     public async read(projection: ProjectionInfo): Promise<TDriverReadRes> {
-        log.info('read called');
-        return await this.execute('read', projection) as TDriverReadRes;
+        const model = this.getModel(projection.name);
+        const driver = this.getModelDriver(model.name);
+        return await driver.read(projection);
     }
 
-    public async readByPK(projection: ProjectionInfo): Promise<Record<string, unknown> | null> {
-        log.info('readByPK called');
-        const where: Record<string, unknown> = {};
-        for (const arg in projection.args) {
-            where[arg] = { _eq: projection.args[arg] };
-        }
-        projection.args = { where };
-        const result = await this.execute('read', projection) as TDriverReadRes;
-        if (result.length > 0) {
-            return result[0];
-        } else {
-            return null;
-        }
+    public async update(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
+        const model = this.getModel(projection.name);
+        const driver = this.getModelDriver(model.name);
+        return await driver.update(projection);
     }
 
-    public async updateMany(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        return await this.execute('update', projection) as IDriverCreateUpdateRes;
-    }
-
-    public async updateByPK(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        return await this.execute('update', projection) as IDriverCreateUpdateRes;
-    }
-
-    public async deleteMany(projection: ProjectionInfo): Promise<TDriverDeleteRes> {
-        return await this.execute('delete', projection) as TDriverDeleteRes;
-    }
-
-    public async deleteByPK(projection: ProjectionInfo): Promise<TDriverDeleteRes> {
-        return await this.execute('delete', projection) as TDriverDeleteRes;
+    public async delete(projection: ProjectionInfo): Promise<TDriverDeleteRes> {
+        const model = this.getModel(projection.name);
+        const driver = this.getModelDriver(model.name);
+        return await driver.delete(projection);
     }
 
     public async aggregate(projection: ProjectionInfo): Promise<IDriverAggregateRes> {
-        return await this.execute('aggregate', projection) as IDriverAggregateRes;
-    }
-
-    private async execute(method: CRUDA, projection: ProjectionInfo) {
-        log.info(`Executing method: '${method}' for model name '${projection.name}'`);
         const model = this.getModel(projection.name);
         const driver = this.getModelDriver(model.name);
-
-        return await driver[method](projection);
+        return await driver.aggregate(projection);
     }
 
     private getModel(name: string): AdurcModel {
@@ -116,7 +85,7 @@ export class Adurc {
         return model;
     }
 
-    private getModelDriver(modelName: string): Driver {
+    private getModelDriver(modelName: string): AdurcDriver {
         const driver = this._mapModelSource.get(modelName);
 
         if (!driver) {

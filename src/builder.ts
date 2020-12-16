@@ -1,48 +1,31 @@
 import { coreDirectives } from './directives';
-import Driver from './bedrock/driver';
 import { AdurcDirectiveDefinition } from './interfaces/model';
-import AdurcIntrospector from './bedrock/introspector';
 import { Adurc } from './adurc';
-import Logger from './logger';
-const log = Logger('core:builder');
+import { AdurcIntrospector } from './introspector';
+import { AdurcDriver } from './driver';
 
 export class AdurcBuilder {
     private introspectors: AdurcIntrospector[] = [];
-    private sources: Map<string, Driver> = new Map();
+    private sources: Map<string, AdurcDriver> = new Map();
     private defaultSource: string | null;
     private directives: AdurcDirectiveDefinition[] = [...coreDirectives];
 
     private constructor() { /* */ }
 
-    public use(bedrock: AdurcIntrospector | Driver): AdurcBuilder {
-        if (!bedrock) throw new Error('ArgumentNull: beedrock');
-
-        log.info(`Bedrock foundation '${bedrock.constructor.name}'.`);
-
-
-        if (bedrock instanceof AdurcIntrospector) {
-            log.info('Detected Introspector, adding it.');
-            this.introspectors.push(bedrock as AdurcIntrospector);
-            return this;
+    public useSource(name: string, driver: AdurcDriver, asDefault = false): AdurcBuilder {
+        if (this.sources.has(name)) {
+            throw new Error(`Already registered source with name ${name}`);
         }
-
-        if (bedrock instanceof Driver) {
-            log.info('Detected Driver, adding it.');
-            this.defaultSource = 'main';
-            
-            if (this.sources.get(this.defaultSource))
-                throw new Error('Support for multiple sources broken, fixme.');
-            this.sources.set(this.defaultSource, bedrock);
-
-            if (bedrock.directives) {
-                bedrock.directives
-                    .forEach(x => this.directives.push({ ...x, name: `${bedrock.name}_${x.name}` }));
-            }
-
-            return this;
+        if (asDefault) {
+            this.defaultSource = name;
         }
+        this.sources.set(name, driver);
+        return this;
+    }
 
-        throw new Error(`Given bedrock foundation '${(bedrock as unknown).constructor.name}' does not extend from a valid class.`);
+    public useIntrospector(introspector: AdurcIntrospector): AdurcBuilder {
+        this.introspectors.push(introspector);
+        return this;
     }
 
     public async build(): Promise<Adurc> {

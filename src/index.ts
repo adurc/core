@@ -1,6 +1,6 @@
 import { Adurc } from './adurc';
-import AdurcDriver from './bedrock/driver';
-import AdurcIntrospector from './bedrock/introspector';
+import { AdurcDriver } from './driver';
+import { AdurcIntrospector } from './introspector';
 import { AdurcBuilder } from './builder';
 import { AdurcContext } from './interfaces/context';
 import { AdurcModel } from './interfaces/model';

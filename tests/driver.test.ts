@@ -1,7 +1,8 @@
-import Driver, {IDriverAggregateRes, IDriverCreateUpdateRes, TDriverDeleteRes, TDriverReadRes} from '../src/bedrock/driver';
+import { AdurcDriver } from '../src/driver';
 import { AdurcModel } from '../src/interfaces/model';
-import AdurcIntrospector from '../src/bedrock/introspector';
 import { Adurc } from '../src/adurc';
+import { AdurcIntrospector } from '../src/introspector';
+import { IDriverCreateUpdateRes, TDriverReadRes, TDriverDeleteRes, IDriverAggregateRes } from '../src/interfaces/driver';
 
 const mockModel: AdurcModel = {
     name: 'Test',
@@ -11,11 +12,10 @@ const mockModel: AdurcModel = {
     ],
 };
 
-class MockDriver extends Driver {
+class MockDriver implements AdurcDriver {
     name = 'MockDriver';
     directives = [];
-    setContext(/* context: DSContext */): void { return; }
-    init(): void | Promise<void> { return; }
+    setContext(/* context: DSContext */): Promise<void> { return; }
     async create(/* projection: ProjectionInfoExpand */): Promise<IDriverCreateUpdateRes> {
         return {};
     }
@@ -29,22 +29,22 @@ class MockDriver extends Driver {
         return;
     }
     async aggregate(/* projection: ProjectionInfoExpand */): Promise<IDriverAggregateRes> {
-        return {aggregate: {}};
+        return { aggregate: {} };
     }
 
 }
 
-describe('data server tests', () => {
+describe('adurc driver tests', () => {
     let adurc: Adurc;
     let mockIntrospector: AdurcIntrospector;
-    let mockDriver: Driver;
+    let mockDriver: AdurcDriver;
 
     beforeEach(async () => {
         mockIntrospector = {
             introspect: () => [mockModel],
         };
 
-        const sources = new Map<string, Driver>();
+        const sources = new Map<string, AdurcDriver>();
         sources.set('mock', mockDriver = new MockDriver());
 
         adurc = new Adurc({
@@ -53,14 +53,6 @@ describe('data server tests', () => {
             sources,
             defaultSource: 'mock',
         });
-    });
-
-    test('call to init driver', async () => {
-        mockDriver.init = jest.fn(mockDriver.init.bind(mockDriver));
-
-        await adurc.init();
-
-        expect(mockDriver.init).toHaveBeenCalledTimes(1);
     });
 
     test('call to setContext driver', async () => {
