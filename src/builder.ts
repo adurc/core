@@ -1,55 +1,66 @@
-import { coreDirectives } from './directives';
-import { AdurcDirectiveDefinition } from './interfaces/model';
 import { Adurc } from './adurc';
-import { AdurcIntrospector } from './introspector';
-import { AdurcDriver } from './driver';
+import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
+import { AdurcContextBuilder } from './interfaces/context';
+
 
 export class AdurcBuilder {
-    private introspectors: AdurcIntrospector[] = [];
-    private sources: Map<string, AdurcDriver> = new Map();
-    private defaultSource: string | null;
-    private directives: AdurcDirectiveDefinition[] = [...coreDirectives];
 
-    private constructor() { /* */ }
+    private _builders: BuilderGeneratorFunction[];
 
-    public useSource(name: string, driver: AdurcDriver, asDefault = false): AdurcBuilder {
-        if (this.sources.has(name)) {
-            throw new Error(`Already registered source with name ${name}`);
-        }
-        if (asDefault) {
-            this.defaultSource = name;
-        }
-        this.sources.set(name, driver);
-        return this;
+    private _context: AdurcContextBuilder;
+
+    constructor() {
+        this._builders = [];
+        this._context = {
+            directives: [],
+            models: [],
+            sources: [],
+        };
     }
 
-    public useIntrospector(introspector: AdurcIntrospector): AdurcBuilder {
-        this.introspectors.push(introspector);
+    public use(builder: BuilderGeneratorFunction): AdurcBuilder {
+        this._builders.push(builder);
         return this;
     }
 
     public async build(): Promise<Adurc> {
-        if (this.introspectors.length === 0) {
-            throw new Error('Adurc requires at least one introspector');
+        const stages: BuilderGenerator[][] = new Array(3);
+
+        stages[0] = [...this._builders.map(x => x(this._context))];
+        stages[BuilderStage.OnInit] = [];
+        stages[BuilderStage.OnAfterInit] = [];
+
+        for (let i = 0; i < stages.length; i++) {
+            const registers = stages[i];
+            let register: BuilderGenerator;
+
+            switch (i as BuilderStage) {
+                case BuilderStage.OnInit:
+                    // validate models, directives, etc..
+                    break;
+                case BuilderStage.OnAfterInit:
+                    this._context.adurc = new Adurc({
+                        directives: this._context.directives,
+                        models: this._context.models,
+                        sources: this._context.sources,
+                    });
+                    break;
+            }
+
+            while ((register = registers.shift())) {
+                const iterator = await register.next();
+                if (!iterator.done && i !== BuilderStage.OnAfterInit) {
+                    const nextStage = (i + 1) as BuilderStage;
+                    if (iterator.value) {
+                        if (iterator.value <= i) {
+                            throw new Error('Register exception trying go to old stage');
+                        }
+                    }
+                    stages[nextStage].push(register);
+                }
+            }
         }
 
-        if (this.sources.size === 0) {
-            throw new Error('Adurc requires at least one source');
-        }
-
-        const adurc = new Adurc({
-            introspectors: this.introspectors,
-            defaultSource: this.defaultSource ?? this.sources.keys().next().value,
-            sources: this.sources,
-            directives: this.directives,
-        });
-
-        await adurc.init();
-
-        return adurc;
-    }
-
-    public static create(): AdurcBuilder {
-        return new AdurcBuilder();
+        return this._context.adurc;
     }
 }
