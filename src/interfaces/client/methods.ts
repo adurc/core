@@ -1,5 +1,5 @@
 import { AdurcAggregateArgs } from './aggregate.args';
-import { BatchResult } from './batch-result';
+import { BatchResult } from './batch.result';
 import { AdurcCreateArgs } from './create.args';
 import { AdurcDeleteArgs } from './delete.args';
 import { AdurcFindManyArgs } from './find-many.args';
