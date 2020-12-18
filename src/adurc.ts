@@ -1,13 +1,13 @@
-import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreate, AdurcClientMethodDelete, AdurcClientMethodRead, AdurcClientMethods, AdurcClientMethodUpdate } from './interfaces/client/client';
+import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethods, AdurcClientMethodUpdateMany } from './interfaces/client/client';
 import { AdurcModel } from './interfaces/model';
 import { AdurcOptions } from './interfaces/options';
 import camelCase from 'camelcase';
-import readResolver from './resolvers/read.resolver';
+import findManyResolver from './resolvers/find-many.resolver';
 import { ResolverContext } from './resolvers/resolver.context';
 import aggregateResolver from './resolvers/aggregate.resolver';
-import createResolver from './resolvers/create.resolver';
-import updateResolver from './resolvers/update.resolver';
-import deleteResolver from './resolvers/delete.resolver';
+import createManyResolver from './resolvers/create.resolver';
+import updateManyResolver from './resolvers/update.resolver';
+import deleteManyResolver from './resolvers/delete-many.resolver';
 
 export class Adurc<T = Record<string, unknown>>  {
     private _models: AdurcModel[] = [];
@@ -45,10 +45,10 @@ export class Adurc<T = Record<string, unknown>>  {
     private generateProxyModel(model: AdurcModel): AdurcClientMethods {
         return {
             aggregate: this.generateProxyMethodAggregate(model),
-            create: this.generateProxyMethodCreate(model),
-            delete: this.generateProxyMethodDelete(model),
-            read: this.generateProxyMethodRead(model),
-            update: this.generateProxyMethodUpdate(model),
+            findMany: this.generateProxyMethodFindMany(model),
+            createMany: this.generateProxyMethodCreate(model),
+            updateMany: this.generateProxyMethodUpdateMany(model),
+            deleteMany: this.generateProxyMethodDelete(model),
         };
     }
 
@@ -58,27 +58,27 @@ export class Adurc<T = Record<string, unknown>>  {
         };
     }
 
-    private generateProxyMethodCreate(model: AdurcModel): AdurcClientMethodCreate {
+    private generateProxyMethodCreate(model: AdurcModel): AdurcClientMethodCreateMany {
         return async (projection) => {
-            return await createResolver(this._resolverContext, model, projection);
+            return await createManyResolver(this._resolverContext, model, projection);
         };
     }
 
-    private generateProxyMethodDelete(model: AdurcModel): AdurcClientMethodDelete {
+    private generateProxyMethodDelete(model: AdurcModel): AdurcClientMethodDeleteMany {
         return async (projection) => {
-            return await deleteResolver(this._resolverContext, model, projection);
+            return await deleteManyResolver(this._resolverContext, model, projection);
         };
     }
 
-    private generateProxyMethodRead(model: AdurcModel): AdurcClientMethodRead {
+    private generateProxyMethodFindMany(model: AdurcModel): AdurcClientMethodFindMany {
         return async (projection) => {
-            return await readResolver(this._resolverContext, model, projection);
+            return await findManyResolver(this._resolverContext, model, projection);
         };
     }
 
-    private generateProxyMethodUpdate(model: AdurcModel): AdurcClientMethodUpdate {
+    private generateProxyMethodUpdateMany(model: AdurcModel): AdurcClientMethodUpdateMany {
         return async (projection) => {
-            return await updateResolver(this._resolverContext, model, projection);
+            return await updateManyResolver(this._resolverContext, model, projection);
         };
     }
 }

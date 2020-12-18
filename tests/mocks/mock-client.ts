@@ -9,7 +9,7 @@ interface MyModels {
 
 const client: AdurcClient<MyModels> = null;
 
-client.post.read({
+client.post.findMany({
     select: {
         published: true
     },
@@ -28,7 +28,7 @@ client.post.read({
     },
 });
 
-client.post.create({
+client.post.createMany({
     data: {
         title: 'demo',
         content: 'demo',
@@ -37,24 +37,24 @@ client.post.create({
     },
 });
 
-client.post.update({
+client.post.updateMany({
     where: { id: 1 },
     data: { published: true },
 });
 
-client.post.delete({
+client.post.deleteMany({
     where: {
         id: 1,
     },
 });
 
-client.user.read({
+client.user.findMany({
     orderBy: {
         email: 'asc',
     },
 });
 
-client.user.read({
+client.user.findMany({
     where: {
         email: {
             endsWith: 'adurc.io',
@@ -67,14 +67,14 @@ client.user.read({
     },
 });
 
-client.post.read({
+client.post.findMany({
     where: {
         author: { email: 'bob@adurc.io' },
         title: { startsWith: 'Hello' },
     },
 });
 
-client.user.create({
+client.user.createMany({
     data: {
         email: 'alice@adurc.io',
         profile: {
@@ -83,7 +83,7 @@ client.user.create({
     },
 });
 
-client.user.create({
+client.user.createMany({
     data: {
         email: 'alice@adurc.io',
         profile: {
@@ -105,7 +105,7 @@ client.user.aggregate({
     },
 });
 
-client.user.read({
+client.user.findMany({
     where: { id: 1 },
     include: {
         posts: {

@@ -30,7 +30,7 @@ const prepareProjectionSource = (context: ResolverContext, model: AdurcModel, pr
     return output;
 };
 
-const readResolver: ResolverMethod<AdurcReadProjection, unknown[]> = async (
+const findManyResolver: ResolverMethod<AdurcReadProjection, unknown[]> = async (
     context,
     model,
     projection,
@@ -48,4 +48,4 @@ const readResolver: ResolverMethod<AdurcReadProjection, unknown[]> = async (
     return results;
 };
 
-export default readResolver;
+export default findManyResolver;
