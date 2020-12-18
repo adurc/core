@@ -1,18 +1,13 @@
 import { Adurc } from './adurc';
+import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
 import { AdurcDirectiveDefinition, AdurcModel } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
 
-export enum RegisterStage {
-    OnInit = 1,
-    OnAfterInit = 2,
-}
 
-export type RegisterGenerator = AsyncGenerator<RegisterStage, void>;
-export type RegisterGeneratorFunction = (builder: AdurcBuilder) => RegisterGenerator;
 
 export class AdurcBuilder {
 
-    private _registers: RegisterGeneratorFunction[];
+    private _registers: BuilderGeneratorFunction[];
 
     public sources: AdurcSource[];
     public directives: AdurcDirectiveDefinition[];
@@ -25,26 +20,26 @@ export class AdurcBuilder {
         this._registers = [];
     }
 
-    public use(register: RegisterGeneratorFunction): AdurcBuilder {
+    public use(register: BuilderGeneratorFunction): AdurcBuilder {
         this._registers.push(register);
         return this;
     }
 
     public async build(): Promise<Adurc> {
-        const stages: RegisterGenerator[][] = new Array(3);
+        const stages: BuilderGenerator[][] = new Array(3);
 
         stages[0] = [...this._registers.map(x => x(this))];
-        stages[RegisterStage.OnInit] = [];
-        stages[RegisterStage.OnAfterInit] = [];
+        stages[BuilderStage.OnInit] = [];
+        stages[BuilderStage.OnAfterInit] = [];
 
         for (let i = 0; i < stages.length; i++) {
             const registers = stages[i];
-            let register: RegisterGenerator;
+            let register: BuilderGenerator;
 
             while ((register = registers.shift())) {
                 const iterator = await register.next();
-                if (!iterator.done && i !== RegisterStage.OnAfterInit) {
-                    const nextStage = (i + 1) as RegisterStage;
+                if (!iterator.done && i !== BuilderStage.OnAfterInit) {
+                    const nextStage = (i + 1) as BuilderStage;
                     if (iterator.value) {
                         if (iterator.value <= i) {
                             throw new Error('Register exception trying go to old stage');

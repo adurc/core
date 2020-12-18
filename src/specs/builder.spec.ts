@@ -1,4 +1,5 @@
-import { AdurcBuilder, RegisterStage } from '../builder';
+import { BuilderStage } from '../interfaces/builder.generator';
+import { AdurcBuilder } from '../builder';
 import { adurcUserModel } from './mocks/mock-user-model';
 
 describe('arduc builder tests', () => {
@@ -9,9 +10,9 @@ describe('arduc builder tests', () => {
 
         builder.use(async function* (_builder) {
             results.push(1);
-            yield RegisterStage.OnInit;
+            yield BuilderStage.OnInit;
             results.push(2);
-            yield RegisterStage.OnAfterInit;
+            yield BuilderStage.OnAfterInit;
             results.push(3);
         });
 
@@ -26,17 +27,17 @@ describe('arduc builder tests', () => {
 
         builder.use(async function* (_builder) {
             results.push(10);
-            yield RegisterStage.OnInit;
+            yield BuilderStage.OnInit;
             results.push(11);
-            yield RegisterStage.OnAfterInit;
+            yield BuilderStage.OnAfterInit;
             results.push(12);
         });
 
         builder.use(async function* (_builder) {
             results.push(20);
-            yield RegisterStage.OnInit;
+            yield BuilderStage.OnInit;
             results.push(21);
-            yield RegisterStage.OnAfterInit;
+            yield BuilderStage.OnAfterInit;
             results.push(22);
         });
 
