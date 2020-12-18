@@ -1,4 +1,5 @@
 dist
+spec
 node_modules
 .env
 graphqls
