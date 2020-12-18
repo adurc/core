@@ -61,4 +61,8 @@ export type AdurcModelWhereSelector<T> = T extends PrimitiveType
 
 export type AdurcModelWhere<T, K extends keyof T = keyof T> = {
     [P in K]?: AdurcModelWhereSelector<T[P]>
+} & {
+    AND?: AdurcModelWhere<T>[]
+    OR?: AdurcModelWhere<T>[]
+    NOT?: AdurcModelWhere<T>[]
 };
