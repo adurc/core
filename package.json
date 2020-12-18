@@ -1,6 +1,6 @@
 {
   "name": "@adurc/core",
-  "version": "0.1.0",
+  "version": null,
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
