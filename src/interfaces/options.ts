@@ -1,8 +1,7 @@
-import { AdurcDriver, AdurcIntrospector } from 'src';
+import { AdurcDriver } from './driver';
 import { AdurcDirectiveDefinition } from './model';
 
 export interface AdurcOptions {
-    introspectors: AdurcIntrospector[];
     sources: Map<string, AdurcDriver>;
     defaultSource: string;
     directives: AdurcDirectiveDefinition[];

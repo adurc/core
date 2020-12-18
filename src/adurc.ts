@@ -1,115 +1,80 @@
-import { AdurcContext } from './interfaces/context';
-import { AdurcDriver } from './driver';
-import { AdurcDirectiveDefinition, AdurcModel } from './interfaces/model';
+import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreate, AdurcClientMethodDelete, AdurcClientMethodRead, AdurcClientMethods, AdurcClientMethodUpdate } from './interfaces/client/client';
+import { AdurcModel } from './interfaces/model';
 import { AdurcOptions } from './interfaces/options';
-import { ProjectionInfo } from './interfaces/projection';
-import { IDriverCreateUpdateRes, TDriverReadRes, TDriverDeleteRes, IDriverAggregateRes } from './interfaces/driver';
+import camelCase from 'camelcase';
+import readResolver from './resolvers/read.resolver';
+import { ResolverContext } from './resolvers/resolver.context';
 
-export class Adurc {
-    private _defaultSource: AdurcDriver;
+export class Adurc<T = Record<string, unknown>>  {
     private _models: AdurcModel[] = [];
-    private _mapModelsByName: Map<string, AdurcModel> = new Map();
-    private _mapModelSource: Map<string, AdurcDriver> = new Map();
-    private _dsContext: AdurcContext;
+    private _client: AdurcClient<T>;
+    private _resolverContext: ResolverContext;
+
+    public get client(): AdurcClient<T> {
+        return this._client;
+    }
 
     public get models(): ReadonlyArray<AdurcModel> {
         return this._models;
     }
 
-    public get directives(): ReadonlyArray<AdurcDirectiveDefinition> {
-        return this.options.directives;
-    }
-
     constructor(
         public readonly options: AdurcOptions,
     ) {
-    }
-
-    public async init(): Promise<void> {
-        this._defaultSource = this.options.sources.get(this.options.defaultSource);
-
-        for (const introspector of this.options.introspectors) {
-            const modelsIntrospected = await introspector.introspect();
-            for (const model of modelsIntrospected) {
-                this.loadModel(model);
-            }
-        }
-
-        this._dsContext = {
-            models: this.models,
+        this._client = this.generateProxyClient() as AdurcClient<T>;
+        this._resolverContext = {
+            models: this._models,
+            sources: {},
         };
-
-        const sourcesIterator = this.options.sources.values();
-        for (const driver of sourcesIterator) {
-            await driver.setContext(this._dsContext);
-        }
     }
 
-    public async create(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        const model = this.getModel(projection.name);
-        const driver = this.getModelDriver(model.name);
-        return await driver.create(projection);
-    }
+    private generateProxyClient(): AdurcClient {
+        const client: AdurcClient = {};
 
-    public async read(projection: ProjectionInfo): Promise<TDriverReadRes> {
-        const model = this.getModel(projection.name);
-        const driver = this.getModelDriver(model.name);
-        return await driver.read(projection);
-    }
-
-    public async update(projection: ProjectionInfo): Promise<IDriverCreateUpdateRes> {
-        const model = this.getModel(projection.name);
-        const driver = this.getModelDriver(model.name);
-        return await driver.update(projection);
-    }
-
-    public async delete(projection: ProjectionInfo): Promise<TDriverDeleteRes> {
-        const model = this.getModel(projection.name);
-        const driver = this.getModelDriver(model.name);
-        return await driver.delete(projection);
-    }
-
-    public async aggregate(projection: ProjectionInfo): Promise<IDriverAggregateRes> {
-        const model = this.getModel(projection.name);
-        const driver = this.getModelDriver(model.name);
-        return await driver.aggregate(projection);
-    }
-
-    private getModel(name: string): AdurcModel {
-        const model = this._mapModelsByName.get(name);
-
-        if (!model) {
-            throw new Error(`Model ${name} not registered`);
+        for (const model of this._models) {
+            client[camelCase(model.name)] = this.generateProxyModel(model);
         }
 
-        return model;
+        return client;
     }
 
-    private getModelDriver(modelName: string): AdurcDriver {
-        const driver = this._mapModelSource.get(modelName);
-
-        if (!driver) {
-            throw new Error(`Source not found for model ${modelName}`);
-        }
-
-        return driver;
+    private generateProxyModel(model: AdurcModel): AdurcClientMethods {
+        return {
+            aggregate: this.generateProxyMethodAggregate(model),
+            create: this.generateProxyMethodCreate(model),
+            delete: this.generateProxyMethodDelete(model),
+            read: this.generateProxyMethodRead(model),
+            update: this.generateProxyMethodUpdate(model),
+        };
     }
 
-    private loadModel(model: AdurcModel) {
-        // TODO: Validate directives 
+    private generateProxyMethodAggregate(_model: AdurcModel): AdurcClientMethodAggregate {
+        return () => {
+            return null;
+        };
+    }
 
-        const sourceDirective = model.directives.find(x => x.name === 'source');
+    private generateProxyMethodCreate(_model: AdurcModel): AdurcClientMethodCreate {
+        return () => {
+            return null;
+        };
+    }
 
-        const source = sourceDirective
-            ? this.options.sources.get(sourceDirective.args.name as string)
-            : this._defaultSource;
+    private generateProxyMethodDelete(_model: AdurcModel): AdurcClientMethodDelete {
+        return () => {
+            return null;
+        };
+    }
 
-        if (!source) {
-            throw new Error(`Error loading model ${model.name}: Source not registered`);
-        }
+    private generateProxyMethodRead(model: AdurcModel): AdurcClientMethodRead {
+        return async (projection) => {
+            return await readResolver(this._resolverContext, model, projection);
+        };
+    }
 
-        this._models.push(model);
-        this._mapModelsByName.set(model.name, model);
-        this._mapModelSource.set(model.name, source);
+    private generateProxyMethodUpdate(_model: AdurcModel): AdurcClientMethodUpdate {
+        return () => {
+            return null;
+        };
     }
 }

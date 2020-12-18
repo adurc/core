@@ -28,14 +28,17 @@ export interface AdurcDirective {
 }
 
 export interface AdurcModel {
+    source: string;
     name: string;
     fields: AdurcField[];
     directives: AdurcDirective[];
 }
 
+export type AdurcFieldReference = { model: string, source: string };
+
 export interface AdurcField {
     name: string;
-    type: string;
+    type: AdurcPrimitiveDefinition | AdurcFieldReference;
     collection: boolean;
     nonNull: boolean;
     directives: AdurcDirective[];
