@@ -1,10 +1,10 @@
-import { AdurcAggregateProjection } from 'src/interfaces/client/aggregate';
+import { AdurcAggregateArgs } from 'src/interfaces/client/aggregate.args';
 import { ResolverMethod } from './resolver.method';
 
-const aggregateResolver: ResolverMethod<AdurcAggregateProjection, unknown> = async (
+const aggregateResolver: ResolverMethod<AdurcAggregateArgs, unknown> = async (
     _context,
     _model,
-    _projection,
+    _args,
 ) => {
     return null;
 };

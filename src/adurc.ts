@@ -54,32 +54,32 @@ export class Adurc<T = Record<string, unknown>>  {
     }
 
     private generateProxyMethodAggregate(model: AdurcModel): AdurcClientMethodAggregate {
-        return async (projection) => {
-            return await aggregateResolver(this._resolverContext, model, projection);
+        return async (args) => {
+            return await aggregateResolver(this._resolverContext, model, args);
         };
     }
 
     private generateProxyMethodCreate(model: AdurcModel): AdurcClientMethodCreateMany {
-        return async (projection) => {
-            return await createManyResolver(this._resolverContext, model, projection);
+        return async (args) => {
+            return await createManyResolver(this._resolverContext, model, args);
         };
     }
 
     private generateProxyMethodDelete(model: AdurcModel): AdurcClientMethodDeleteMany {
-        return async (projection) => {
-            return await deleteManyResolver(this._resolverContext, model, projection);
+        return async (args) => {
+            return await deleteManyResolver(this._resolverContext, model, args);
         };
     }
 
     private generateProxyMethodFindMany(model: AdurcModel): AdurcClientMethodFindMany {
-        return async (projection) => {
-            return await findManyResolver(this._resolverContext, model, projection);
+        return async (args) => {
+            return await findManyResolver(this._resolverContext, model, args);
         };
     }
 
     private generateProxyMethodUpdateMany(model: AdurcModel): AdurcClientMethodUpdateMany {
-        return async (projection) => {
-            return await updateManyResolver(this._resolverContext, model, projection);
+        return async (args) => {
+            return await updateManyResolver(this._resolverContext, model, args);
         };
     }
 }

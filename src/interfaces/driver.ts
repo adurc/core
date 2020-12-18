@@ -1,13 +1,13 @@
-import { AdurcAggregateProjection } from './client/aggregate';
-import { AdurcCreateProjection } from './client/create';
-import { AdurcDeleteProjection } from './client/delete';
-import { AdurcReadProjection } from './client/read';
-import { AdurcUpdateProjection } from './client/update';
+import { AdurcAggregateArgs } from './client/aggregate.args';
+import { AdurcCreateArgs } from './client/create.args';
+import { AdurcDeleteArgs } from './client/delete.args';
+import { AdurcFindManyArgs } from './client/find-many.args';
+import { AdurcUpdateArgs } from './client/update';
 
 export interface AdurcDriver {
-    create(projection: AdurcCreateProjection): Promise<unknown>;
-    read(projection: AdurcReadProjection): Promise<unknown[]>;
-    update(projection: AdurcUpdateProjection): Promise<unknown>;
-    delete(projection: AdurcDeleteProjection): Promise<unknown>;
-    aggregate(projection: AdurcAggregateProjection): Promise<unknown>;
+    createMany(args: AdurcCreateArgs): Promise<unknown>;
+    findMany(args: AdurcFindManyArgs): Promise<unknown[]>;
+    updateMany(args: AdurcUpdateArgs): Promise<unknown>;
+    deleteMany(args: AdurcDeleteArgs): Promise<unknown>;
+    aggregate(args: AdurcAggregateArgs): Promise<unknown>;
 }

@@ -2,11 +2,11 @@
 import { ResolverMethod } from './resolver.method';
 import v8 from 'v8';
 import { ResolverContext } from './resolver.context';
-import { AdurcReadProjection } from 'src/interfaces/client/read';
+import { AdurcFindManyArgs } from 'src/interfaces/client/find-many.args';
 import { AdurcModel } from 'src/interfaces/model';
 
-const prepareProjectionSource = (context: ResolverContext, model: AdurcModel, projection: AdurcReadProjection) => {
-    const output: AdurcReadProjection = v8.deserialize(v8.serialize(projection));
+const prepareSourceArgs = (context: ResolverContext, model: AdurcModel, args: AdurcFindManyArgs) => {
+    const output: AdurcFindManyArgs = v8.deserialize(v8.serialize(args));
 
     for (const fieldName in output.include) {
         const field = model.fields.find(x => x.name === fieldName);
@@ -24,16 +24,16 @@ const prepareProjectionSource = (context: ResolverContext, model: AdurcModel, pr
             continue;
         }
 
-        output.include[fieldName] = prepareProjectionSource(context, modelRelated, output.include[fieldName]);
+        output.include[fieldName] = prepareSourceArgs(context, modelRelated, output.include[fieldName]);
     }
 
     return output;
 };
 
-const findManyResolver: ResolverMethod<AdurcReadProjection, unknown[]> = async (
+const findManyResolver: ResolverMethod<AdurcFindManyArgs, unknown[]> = async (
     context,
     model,
-    projection,
+    args,
 ) => {
     const source = context.sources[model.source];
 
@@ -41,9 +41,9 @@ const findManyResolver: ResolverMethod<AdurcReadProjection, unknown[]> = async (
         throw new Error(`Source ${model.source} not registered`);
     }
 
-    const projectionSource = prepareProjectionSource(context, model, projection);
+    const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.read(projectionSource);
+    const results = await source.findMany(sourceArgs);
 
     return results;
 };

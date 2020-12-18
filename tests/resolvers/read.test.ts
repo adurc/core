@@ -1,6 +1,6 @@
-import readResolver from '../../src/resolvers/read.resolver';
+import findManyResolver from '../../src/resolvers/find-many.resolver';
 import { ResolverContext } from '../../src/resolvers/resolver.context';
-import { AdurcReadProjection } from '../../src/interfaces/client/read';
+import { AdurcFindManyArgs } from '../../src/interfaces/client/find-many.args';
 import mockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
 
@@ -14,18 +14,18 @@ describe('resolver read tests', () => {
             }
         };
 
-        const projection: AdurcReadProjection<UserModel> = {
+        const args: AdurcFindManyArgs<UserModel> = {
             select: {
                 email: true
             }
         };
 
-        mockDriver.read = jest.fn(mockDriver.read.bind(mockDriver));
+        mockDriver.findMany = jest.fn(mockDriver.findMany.bind(mockDriver));
 
-        await readResolver(context, adurcUserModel, projection);
+        await findManyResolver(context, adurcUserModel, args);
 
-        expect(mockDriver.read).toHaveBeenCalledTimes(1);
-        expect(mockDriver.read).toHaveBeenCalledWith(projection);
+        expect(mockDriver.findMany).toHaveBeenCalledTimes(1);
+        expect(mockDriver.findMany).toHaveBeenCalledWith(args);
     });
 
 });

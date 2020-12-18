@@ -3,7 +3,7 @@ import { AdurcModelSelect } from './select';
 import { AdurcModelOrderBy } from './sort';
 import { AdurcModelWhere } from './where';
 
-export type AdurcReadProjection<T = unknown> = {
+export type AdurcFindManyArgs<T = unknown> = {
     select?: AdurcModelSelect<T>;
     include?: AdurcModelInclude<T>;
     where?: AdurcModelWhere<T>;

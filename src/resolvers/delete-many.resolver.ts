@@ -1,11 +1,11 @@
-import { AdurcDeleteProjection } from 'src/interfaces/client/delete';
+import { AdurcDeleteArgs } from 'src/interfaces/client/delete.args';
 import { BatchResult } from 'src/interfaces/client/batch-result';
 import { ResolverMethod } from './resolver.method';
 
-const deleteManyResolver: ResolverMethod<AdurcDeleteProjection, BatchResult> = async (
+const deleteManyResolver: ResolverMethod<AdurcDeleteArgs, BatchResult> = async (
     _context,
     _model,
-    _projection,
+    _args,
 ) => {
     return null;
 };

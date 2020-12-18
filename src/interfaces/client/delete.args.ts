@@ -1,5 +1,5 @@
 import { AdurcModelWhere } from './where';
 
-export type AdurcDeleteProjection<T = unknown> = {
+export type AdurcDeleteArgs<T = unknown> = {
     where?: AdurcModelWhere<T>;
 };

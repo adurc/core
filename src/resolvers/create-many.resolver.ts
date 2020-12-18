@@ -1,11 +1,11 @@
 import { BatchResult } from 'src/interfaces/client/batch-result';
-import { AdurcCreateProjection } from 'src/interfaces/client/create';
+import { AdurcCreateArgs } from 'src/interfaces/client/create.args';
 import { ResolverMethod } from './resolver.method';
 
-const createManyResolver: ResolverMethod<AdurcCreateProjection, BatchResult> = async (
+const createManyResolver: ResolverMethod<AdurcCreateArgs, BatchResult> = async (
     _context,
     _model,
-    _projection,
+    _args,
 ) => {
     return null;
 };
