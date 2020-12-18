@@ -2,11 +2,11 @@
 import v8 from 'v8';
 
 import { ResolverMethod } from './resolver.method';
-import { ResolverContext } from './resolver.context';
 import { AdurcFindManyArgs } from 'src/interfaces/client/find-many.args';
 import { AdurcModel } from 'src/interfaces/model';
+import { AdurcContext } from 'src/interfaces/context';
 
-const prepareSourceArgs = (context: ResolverContext, model: AdurcModel, args: AdurcFindManyArgs) => {
+const prepareSourceArgs = (context: AdurcContext, model: AdurcModel, args: AdurcFindManyArgs) => {
     const output: AdurcFindManyArgs = v8.deserialize(v8.serialize(args));
 
     for (const fieldName in output.include) {
@@ -36,7 +36,7 @@ const findManyResolver: ResolverMethod<AdurcFindManyArgs, unknown[]> = async (
     model,
     args,
 ) => {
-    const source = context.sources[model.source];
+    const source = context.sources.find(x => x.name === model.source);
 
     if (!source) {
         throw new Error(`Source ${model.source} not registered`);
@@ -44,7 +44,7 @@ const findManyResolver: ResolverMethod<AdurcFindManyArgs, unknown[]> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.findMany(sourceArgs);
+    const results = await source.driver.findMany(sourceArgs);
 
     return results;
 };

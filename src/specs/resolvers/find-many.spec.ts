@@ -1,17 +1,19 @@
-import findManyResolver from '../../src/resolvers/find-many.resolver';
-import { ResolverContext } from '../../src/resolvers/resolver.context';
-import { AdurcFindManyArgs } from '../../src/interfaces/client/find-many.args';
+import findManyResolver from '../../resolvers/find-many.resolver';
+import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
 import mockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
+import { AdurcContext } from 'src/interfaces/context';
 
-describe('resolver read tests', () => {
+describe('resolver find many tests', () => {
 
-    it('call driver read with single source', async () => {
-        const context: ResolverContext = {
+    it('call driver find many with single source', async () => {
+        const context: AdurcContext = {
             models: [adurcUserModel],
-            sources: {
-                mock: mockDriver,
-            }
+            directives: [],
+            sources: [{
+                name: 'mock',
+                driver: mockDriver,
+            }]
         };
 
         const args: AdurcFindManyArgs<UserModel> = {

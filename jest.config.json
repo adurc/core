@@ -2,7 +2,7 @@
     "projects": [
         {
             "testMatch": [
-                "<rootDir>/tests/**/*.test.ts"
+                "<rootDir>/src/specs/**/*.spec.ts"
             ]
         }
     ]

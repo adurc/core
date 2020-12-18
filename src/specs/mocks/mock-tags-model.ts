@@ -1,4 +1,4 @@
-import { AdurcModel } from '../../src/interfaces/model';
+import { AdurcModel } from '../../interfaces/model';
 
 export interface TagModel {
     id: number;

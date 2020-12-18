@@ -1,5 +1,8 @@
-import { AdurcModel } from './model';
+import { AdurcDirectiveDefinition, AdurcModel } from './model';
+import { AdurcSource } from './source';
 
 export interface AdurcContext {
-    models: ReadonlyArray<AdurcModel>;
+    sources: AdurcSource[];
+    models: AdurcModel[];
+    directives: AdurcDirectiveDefinition[];
 }

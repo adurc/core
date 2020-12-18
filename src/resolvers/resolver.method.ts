@@ -1,4 +1,4 @@
+import { AdurcContext } from 'src/interfaces/context';
 import { AdurcModel } from 'src/interfaces/model';
-import { ResolverContext } from './resolver.context';
 
-export type ResolverMethod<T, R> = (context: ResolverContext, model: AdurcModel, args: T) => Promise<R>;
+export type ResolverMethod<T, R> = (context: AdurcContext, model: AdurcModel, args: T) => Promise<R>;

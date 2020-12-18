@@ -1,4 +1,4 @@
-import { AdurcModel } from '../../src/interfaces/model';
+import { AdurcModel } from '../../interfaces/model';
 import { UserModel } from './mock-user-model';
 
 export interface ProfileModel {

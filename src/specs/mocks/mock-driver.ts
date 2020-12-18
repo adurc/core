@@ -1,5 +1,5 @@
-import { AdurcFindManyArgs } from '../../src/interfaces/client/find-many.args';
-import { AdurcDriver } from '../../src/interfaces/driver';
+import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
+import { AdurcDriver } from '../../interfaces/driver';
 
 const mockDriver: AdurcDriver = {
     aggregate: () => null,
