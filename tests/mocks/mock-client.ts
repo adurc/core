@@ -29,12 +29,12 @@ client.post.findMany({
 });
 
 client.post.createMany({
-    data: {
+    data: [{
         title: 'demo',
         content: 'demo',
         published: false,
         author: { connect: { email: 'demo' } },
-    },
+    }],
 });
 
 client.post.updateMany({
@@ -75,16 +75,16 @@ client.post.findMany({
 });
 
 client.user.createMany({
-    data: {
+    data: [{
         email: 'alice@adurc.io',
         profile: {
             create: { bio: 'Hello World' },
         },
-    },
+    }],
 });
 
 client.user.createMany({
-    data: {
+    data: [{
         email: 'alice@adurc.io',
         profile: {
             connectOrCreate: {
@@ -96,7 +96,7 @@ client.user.createMany({
                 },
             }
         },
-    },
+    }],
 });
 
 client.user.aggregate({

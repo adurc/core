@@ -5,7 +5,7 @@ import camelCase from 'camelcase';
 import findManyResolver from './resolvers/find-many.resolver';
 import { ResolverContext } from './resolvers/resolver.context';
 import aggregateResolver from './resolvers/aggregate.resolver';
-import createManyResolver from './resolvers/create.resolver';
+import createManyResolver from './resolvers/create-many.resolver';
 import updateManyResolver from './resolvers/update.resolver';
 import deleteManyResolver from './resolvers/delete-many.resolver';
 import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany } from './interfaces/client/methods';

@@ -15,7 +15,7 @@ export type AdurcCreateProjectionRelation<T, K extends keyof T = keyof T> = {
 }
 
 export type AdurcCreateProjection<T = unknown, K extends keyof T = keyof T> = {
-    data: {
+    data: Array<{
         [P in K]?: T[P] extends PrimitiveType ? T[P] : AdurcCreateProjectionRelation<T[P]>
-    };
+    }>;
 };
