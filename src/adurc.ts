@@ -1,4 +1,4 @@
-import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethods, AdurcClientMethodUpdateMany } from './interfaces/client/client';
+import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethods, AdurcClientMethodUpdateMany } from './interfaces/client';
 import { AdurcModel } from './interfaces/model';
 import { AdurcOptions } from './interfaces/options';
 import camelCase from 'camelcase';
