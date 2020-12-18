@@ -1,4 +1,4 @@
-import { AdurcClient, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethods, AdurcClientMethodUpdateMany } from './interfaces/client';
+import { AdurcClient } from './interfaces/client';
 import { AdurcModel } from './interfaces/model';
 import { AdurcOptions } from './interfaces/options';
 import camelCase from 'camelcase';
@@ -8,6 +8,7 @@ import aggregateResolver from './resolvers/aggregate.resolver';
 import createManyResolver from './resolvers/create.resolver';
 import updateManyResolver from './resolvers/update.resolver';
 import deleteManyResolver from './resolvers/delete-many.resolver';
+import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany } from './interfaces/client/methods';
 
 export class Adurc<T = Record<string, unknown>>  {
     private _models: AdurcModel[] = [];
