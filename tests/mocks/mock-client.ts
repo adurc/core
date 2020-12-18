@@ -2,7 +2,6 @@ import { AdurcClient } from '../../src/interfaces/client/client';
 import { PostModel } from './mock-post-model';
 import { UserModel } from './mock-user-model';
 
-
 interface MyModels {
     user: UserModel;
     post: PostModel;

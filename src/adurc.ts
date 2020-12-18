@@ -4,6 +4,10 @@ import { AdurcOptions } from './interfaces/options';
 import camelCase from 'camelcase';
 import readResolver from './resolvers/read.resolver';
 import { ResolverContext } from './resolvers/resolver.context';
+import aggregateResolver from './resolvers/aggregate.resolver';
+import createResolver from './resolvers/create.resolver';
+import updateResolver from './resolvers/update.resolver';
+import deleteResolver from './resolvers/delete.resolver';
 
 export class Adurc<T = Record<string, unknown>>  {
     private _models: AdurcModel[] = [];
@@ -48,21 +52,21 @@ export class Adurc<T = Record<string, unknown>>  {
         };
     }
 
-    private generateProxyMethodAggregate(_model: AdurcModel): AdurcClientMethodAggregate {
-        return () => {
-            return null;
+    private generateProxyMethodAggregate(model: AdurcModel): AdurcClientMethodAggregate {
+        return async (projection) => {
+            return await aggregateResolver(this._resolverContext, model, projection);
         };
     }
 
-    private generateProxyMethodCreate(_model: AdurcModel): AdurcClientMethodCreate {
-        return () => {
-            return null;
+    private generateProxyMethodCreate(model: AdurcModel): AdurcClientMethodCreate {
+        return async (projection) => {
+            return await createResolver(this._resolverContext, model, projection);
         };
     }
 
-    private generateProxyMethodDelete(_model: AdurcModel): AdurcClientMethodDelete {
-        return () => {
-            return null;
+    private generateProxyMethodDelete(model: AdurcModel): AdurcClientMethodDelete {
+        return async (projection) => {
+            return await deleteResolver(this._resolverContext, model, projection);
         };
     }
 
@@ -72,9 +76,9 @@ export class Adurc<T = Record<string, unknown>>  {
         };
     }
 
-    private generateProxyMethodUpdate(_model: AdurcModel): AdurcClientMethodUpdate {
-        return () => {
-            return null;
+    private generateProxyMethodUpdate(model: AdurcModel): AdurcClientMethodUpdate {
+        return async (projection) => {
+            return await updateResolver(this._resolverContext, model, projection);
         };
     }
 }
