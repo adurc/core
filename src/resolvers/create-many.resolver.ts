@@ -1,10 +1,9 @@
 import v8 from 'v8';
-
-import { BatchResult } from 'src/interfaces/client/batch.result';
-import { AdurcCreateArgs } from 'src/interfaces/client/create.args';
-import { AdurcModel } from 'src/interfaces/model';
+import { BatchResult } from '../interfaces/client/batch.result';
+import { AdurcCreateArgs } from '../interfaces/client/create.args';
+import { AdurcContext } from '../interfaces/context';
+import { AdurcModel } from '../interfaces/model';
 import { ResolverMethod } from './resolver.method';
-import { AdurcContext } from 'src/interfaces/context';
 
 
 const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: AdurcCreateArgs) => {

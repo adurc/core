@@ -9,8 +9,7 @@
     "esModuleInterop": true,
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "./spec",
-    "baseUrl": "./",
+    "outDir": "./dist",
     "incremental": true,
   },
   "include": [
@@ -19,6 +18,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "spec"
+    "src/specs/**/*",
   ]
 }

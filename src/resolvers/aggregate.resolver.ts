@@ -1,8 +1,7 @@
 import v8 from 'v8';
-
-import { AdurcAggregateArgs } from 'src/interfaces/client/aggregate.args';
-import { AdurcContext } from 'src/interfaces/context';
-import { AdurcModel } from 'src/interfaces/model';
+import { AdurcAggregateArgs } from '../interfaces/client/aggregate.args';
+import { AdurcContext } from '../interfaces/context';
+import { AdurcModel } from '../interfaces/model';
 import { ResolverMethod } from './resolver.method';
 
 const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: AdurcAggregateArgs) => {

@@ -1,4 +1,4 @@
-import { AdurcBuilder } from 'src/builder';
+import { AdurcBuilder } from '../builder';
 
 export enum BuilderStage {
     OnInit = 1,

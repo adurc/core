@@ -1,10 +1,10 @@
 import v8 from 'v8';
+import { BatchResult } from '../interfaces/client/batch.result';
+import { AdurcUpdateArgs } from '../interfaces/client/update';
+import { AdurcContext } from '../interfaces/context';
+import { AdurcModel } from '../interfaces/model';
 
-import { BatchResult } from 'src/interfaces/client/batch.result';
-import { AdurcUpdateArgs } from 'src/interfaces/client/update';
 import { ResolverMethod } from './resolver.method';
-import { AdurcModel } from 'src/interfaces/model';
-import { AdurcContext } from 'src/interfaces/context';
 
 const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: AdurcUpdateArgs) => {
     const output: AdurcUpdateArgs = v8.deserialize(v8.serialize(args));

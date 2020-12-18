@@ -2,7 +2,7 @@ import findManyResolver from '../../resolvers/find-many.resolver';
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
 import mockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
-import { AdurcContext } from 'src/interfaces/context';
+import { AdurcContext } from '../../interfaces/context';
 
 describe('resolver find many tests', () => {
 
