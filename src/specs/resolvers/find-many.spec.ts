@@ -1,18 +1,19 @@
 import findManyResolver from '../../resolvers/find-many.resolver';
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
-import mockDriver from '../mocks/mock-driver';
+import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
 import { AdurcContext } from '../../interfaces/context';
 
 describe('resolver find many tests', () => {
 
     it('call driver find many with single source', async () => {
+        const driver = new MockDriver('mock');
         const context: AdurcContext = {
             models: [adurcUserModel],
             directives: [],
             sources: [{
                 name: 'mock',
-                driver: mockDriver,
+                driver,
             }]
         };
 
@@ -22,12 +23,12 @@ describe('resolver find many tests', () => {
             }
         };
 
-        mockDriver.findMany = jest.fn(mockDriver.findMany.bind(mockDriver));
+        driver.findMany = jest.fn(driver.findMany.bind(driver));
 
         await findManyResolver(context, adurcUserModel, args);
 
-        expect(mockDriver.findMany).toHaveBeenCalledTimes(1);
-        expect(mockDriver.findMany).toHaveBeenCalledWith(args);
+        expect(driver.findMany).toHaveBeenCalledTimes(1);
+        expect(driver.findMany).toHaveBeenCalledWith(args);
     });
 
 });

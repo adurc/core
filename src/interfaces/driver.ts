@@ -4,13 +4,15 @@ import { AdurcCreateArgs } from './client/create.args';
 import { AdurcDeleteArgs } from './client/delete.args';
 import { AdurcFindManyArgs } from './client/find-many.args';
 import { AdurcUpdateArgs } from './client/update';
+import { AdurcContext } from './context';
 
 export interface AdurcDriver {
-    init(): Promise<void>;
+    setContext(context: AdurcContext): Promise<void> | void;
+    init(): Promise<void> | void;
 
-    createMany(args: AdurcCreateArgs): Promise<BatchResult>;
-    findMany(args: AdurcFindManyArgs): Promise<unknown[]>;
-    updateMany(args: AdurcUpdateArgs): Promise<BatchResult>;
-    deleteMany(args: AdurcDeleteArgs): Promise<BatchResult>;
-    aggregate(args: AdurcAggregateArgs): Promise<unknown>;
+    createMany(args: AdurcCreateArgs): Promise<BatchResult> | BatchResult;
+    findMany(args: AdurcFindManyArgs): Promise<unknown[]> | unknown[];
+    updateMany(args: AdurcUpdateArgs): Promise<BatchResult> | BatchResult;
+    deleteMany(args: AdurcDeleteArgs): Promise<BatchResult> | BatchResult;
+    aggregate(args: AdurcAggregateArgs): Promise<unknown> | unknown;
 }

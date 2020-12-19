@@ -3,49 +3,27 @@ import { AdurcDriver } from '../interfaces/driver';
 
 export class SourceBuilder {
 
-    private name: string;
-    private driver: AdurcDriver;
-
-    private constructor() {
-        this.name = null;
-        this.driver = null;
-    }
-
-    public withName(name: string): SourceBuilder {
-        this.name = name;
-        return this;
-    }
-
-    public withDriver(driver: AdurcDriver): SourceBuilder {
-        this.driver = driver;
-        return this;
-    }
-
-    public generator(): BuilderGeneratorFunction {
-        const name = this.name;
-        const driver = this.driver;
-
-        if (!this.name) {
+    public static use(options: { name: string, driver: AdurcDriver }): BuilderGeneratorFunction {
+        const { name, driver } = options;
+        
+        if (!name) {
             throw new Error('Required name for register source');
         }
-        if (!this.driver) {
+        if (!driver) {
             throw new Error('Required driver for register source');
         }
 
-        return async function* SourceGenerator(builder) {
-            builder.sources.push({
+        return async function* SourceGenerator(context) {
+            context.sources.push({
                 name,
                 driver,
             });
+
+            await driver.setContext(context);
 
             yield BuilderStage.OnInit;
 
             await driver.init();
         };
-
-    }
-
-    public static use(): SourceBuilder {
-        return new SourceBuilder();
     }
 }

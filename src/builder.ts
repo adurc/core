@@ -1,21 +1,20 @@
 import { Adurc } from './adurc';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
-import { AdurcDirectiveDefinition, AdurcModel } from './interfaces/model';
-import { AdurcSource } from './interfaces/source';
+import { AdurcContext } from './interfaces/context';
 
 export class AdurcBuilder {
 
     private _builders: BuilderGeneratorFunction[];
 
-    public sources: AdurcSource[];
-    public directives: AdurcDirectiveDefinition[];
-    public models: AdurcModel[];
+    private _context: AdurcContext;
 
     constructor() {
-        this.sources = [];
-        this.directives = [];
-        this.models = [];
         this._builders = [];
+        this._context = {
+            directives: [],
+            models: [],
+            sources: [],
+        };
     }
 
     public use(builder: BuilderGeneratorFunction): AdurcBuilder {
@@ -26,7 +25,7 @@ export class AdurcBuilder {
     public async build(): Promise<Adurc> {
         const stages: BuilderGenerator[][] = new Array(3);
 
-        stages[0] = [...this._builders.map(x => x(this))];
+        stages[0] = [...this._builders.map(x => x(this._context))];
         stages[BuilderStage.OnInit] = [];
         stages[BuilderStage.OnAfterInit] = [];
 
@@ -52,10 +51,6 @@ export class AdurcBuilder {
         // TODO: Pending validate sources
         // TODO: Pending validate models
 
-        return new Adurc({
-            sources: this.sources,
-            directives: this.directives,
-            models: this.models,
-        });
+        return new Adurc(this._context);
     }
 }

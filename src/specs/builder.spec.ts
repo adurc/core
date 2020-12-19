@@ -1,6 +1,8 @@
 import { BuilderStage } from '../interfaces/builder.generator';
 import { AdurcBuilder } from '../builder';
 import { adurcUserModel } from './mocks/mock-user-model';
+import { SourceBuilder } from '../builders/source.builder';
+import MockDriver from './mocks/mock-driver';
 
 describe('arduc builder tests', () => {
 
@@ -49,11 +51,27 @@ describe('arduc builder tests', () => {
     it('register model', async () => {
         const builder = new AdurcBuilder();
 
-        builder.models.push(adurcUserModel);
+        builder.use(async function* (context) {
+            context.models.push(adurcUserModel);
+            yield;
+        });
 
         const adurc = await builder.build();
 
         expect(adurc.context.models).toStrictEqual([adurcUserModel]);
     });
 
+    it('register source', async () => {
+        const builder = new AdurcBuilder();
+        const driver = new MockDriver('mock-driver');
+
+        builder.use(SourceBuilder.use({ name: 'mock', driver }));
+
+        const adurc = await builder.build();
+
+        expect(adurc.context.sources).toStrictEqual([{
+            name: 'mock',
+            driver,
+        }]);
+    });
 });
