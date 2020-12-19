@@ -6,6 +6,8 @@ import { AdurcFindManyArgs } from './client/find-many.args';
 import { AdurcUpdateArgs } from './client/update';
 
 export interface AdurcDriver {
+    init(): Promise<void>;
+
     createMany(args: AdurcCreateArgs): Promise<BatchResult>;
     findMany(args: AdurcFindManyArgs): Promise<unknown[]>;
     updateMany(args: AdurcUpdateArgs): Promise<BatchResult>;

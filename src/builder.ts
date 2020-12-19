@@ -3,11 +3,9 @@ import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './inte
 import { AdurcDirectiveDefinition, AdurcModel } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
 
-
-
 export class AdurcBuilder {
 
-    private _registers: BuilderGeneratorFunction[];
+    private _builders: BuilderGeneratorFunction[];
 
     public sources: AdurcSource[];
     public directives: AdurcDirectiveDefinition[];
@@ -17,18 +15,18 @@ export class AdurcBuilder {
         this.sources = [];
         this.directives = [];
         this.models = [];
-        this._registers = [];
+        this._builders = [];
     }
 
-    public use(register: BuilderGeneratorFunction): AdurcBuilder {
-        this._registers.push(register);
+    public use(builder: BuilderGeneratorFunction): AdurcBuilder {
+        this._builders.push(builder);
         return this;
     }
 
     public async build(): Promise<Adurc> {
         const stages: BuilderGenerator[][] = new Array(3);
 
-        stages[0] = [...this._registers.map(x => x(this))];
+        stages[0] = [...this._builders.map(x => x(this))];
         stages[BuilderStage.OnInit] = [];
         stages[BuilderStage.OnAfterInit] = [];
 
