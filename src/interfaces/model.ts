@@ -1,6 +1,7 @@
 import { AdurcObject, AdurcPrimitiveDefinition } from './common';
 
 export interface AdurcDirective {
+    provider: string;
     name: string;
     args: AdurcObject;
 }
