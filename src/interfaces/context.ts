@@ -1,4 +1,5 @@
-import { AdurcDirectiveDefinition, AdurcModel } from './model';
+import { AdurcDirectiveDefinition } from './directive-definition';
+import { AdurcModel } from './model';
 import { AdurcSource } from './source';
 
 export interface AdurcContext {
