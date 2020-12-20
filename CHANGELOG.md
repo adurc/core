@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0-alpha.9](https://github.com/adurc/core/compare/v0.1.0-alpha.8...v0.1.0-alpha.9) (2020-12-20)
+
 ## [0.1.0-alpha.8](https://github.com/adurc/core/compare/v0.1.0-alpha.7...v0.1.0-alpha.8) (2020-12-20)
 
 ## [0.1.0-alpha.7](https://github.com/adurc/core/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2020-12-20)
