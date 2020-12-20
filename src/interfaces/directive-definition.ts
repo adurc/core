@@ -3,9 +3,9 @@ import { AdurcObject, AdurcPrimitiveDefinition } from './common';
 export type AdurcValueDefinition = AdurcPrimitiveDefinition | AdurcObject<AdurcPrimitiveDefinition>;
 
 export type AdurcDirectiveArgDefinition = ({
-    value: AdurcPrimitiveDefinition | AdurcObject<AdurcDirectiveArgDefinition>;
+    type: AdurcPrimitiveDefinition | AdurcObject<AdurcDirectiveArgDefinition>;
 } | {
-    value: 'enum';
+    type: 'enum';
     options: string[];
 }) & {
     nonNull?: boolean;
