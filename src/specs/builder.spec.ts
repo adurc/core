@@ -61,17 +61,4 @@ describe('arduc builder tests', () => {
         expect(adurc.context.models).toStrictEqual([adurcUserModel]);
     });
 
-    it('register source', async () => {
-        const builder = new AdurcBuilder();
-        const driver = new MockDriver('mock-driver');
-
-        builder.use(SourceBuilder.use({ name: 'mock', driver }));
-
-        const adurc = await builder.build();
-
-        expect(adurc.context.sources).toStrictEqual([{
-            name: 'mock',
-            driver,
-        }]);
-    });
 });
