@@ -24,7 +24,9 @@ client.post.findMany({
         },
     },
     include: {
-        author: true,
+        author: {
+            age: true,
+        },
     },
 });
 
