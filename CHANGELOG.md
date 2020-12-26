@@ -2,26 +2,4 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.1.0](https://github.com/adurc/core/compare/v0.1.0-alpha.11...v0.1.0) (2020-12-26)
-
-## [0.1.0-alpha.11](https://github.com/adurc/core/compare/v0.1.0-alpha.10...v0.1.0-alpha.11) (2020-12-26)
-
-## [0.1.0-alpha.10](https://github.com/adurc/core/compare/v0.1.0-alpha.9...v0.1.0-alpha.10) (2020-12-26)
-
-## [0.1.0-alpha.9](https://github.com/adurc/core/compare/v0.1.0-alpha.8...v0.1.0-alpha.9) (2020-12-20)
-
-## [0.1.0-alpha.8](https://github.com/adurc/core/compare/v0.1.0-alpha.7...v0.1.0-alpha.8) (2020-12-20)
-
-## [0.1.0-alpha.7](https://github.com/adurc/core/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2020-12-20)
-
-## [0.1.0-alpha.6](https://github.com/adurc/core/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2020-12-20)
-
-## [0.1.0-alpha.5](https://github.com/adurc/core/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2020-12-20)
-
-## [0.1.0-alpha.4](https://github.com/adurc/core/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2020-12-19)
-
-## [0.1.0-alpha.3](https://github.com/adurc/core/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2020-12-19)
-
-## [0.1.0-alpha.2](https://github.com/adurc/core/compare/v0.0.2...v0.1.0-alpha.2) (2020-12-18)
-
-### 0.0.2 (2020-12-16)
+### 0.1.1 (2020-12-26)
