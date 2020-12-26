@@ -4,7 +4,7 @@
 
 <p align="center">Adurc is an open source framework for build an ORM, supporting multiples data sources and service layers.</p>
 <p align="center">
-  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@adurc/core.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/package/@adurc/core" target="_blank"><img src="https://img.shields.io/npm/v/@adurc/core.svg" alt="NPM Version" /></a>
 </p>
 
 ## What is Adurc?
