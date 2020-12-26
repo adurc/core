@@ -22,7 +22,7 @@ const aggregateResolver: ResolverMethod<AdurcAggregateArgs, unknown> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.driver.aggregate(sourceArgs);
+    const results = await source.driver.aggregate(model, sourceArgs);
 
     return results;
 };

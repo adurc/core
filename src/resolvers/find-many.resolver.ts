@@ -43,7 +43,7 @@ const findManyResolver: ResolverMethod<AdurcFindManyArgs, unknown[]> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.driver.findMany(sourceArgs);
+    const results = await source.driver.findMany(model, sourceArgs);
 
     return results;
 };

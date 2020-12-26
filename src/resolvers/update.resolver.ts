@@ -24,7 +24,7 @@ const updateManyResolver: ResolverMethod<AdurcUpdateArgs, BatchResult> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.driver.updateMany(sourceArgs);
+    const results = await source.driver.updateMany(model, sourceArgs);
 
     return results;
 };

@@ -24,7 +24,7 @@ const createManyResolver: ResolverMethod<AdurcCreateArgs, BatchResult> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.driver.createMany(sourceArgs);
+    const results = await source.driver.createMany(model, sourceArgs);
 
     return results;
 };

@@ -23,7 +23,7 @@ const deleteManyResolver: ResolverMethod<AdurcDeleteArgs, BatchResult> = async (
 
     const sourceArgs = prepareSourceArgs(context, model, args);
 
-    const results = await source.driver.deleteMany(sourceArgs);
+    const results = await source.driver.deleteMany(model, sourceArgs);
 
     return results;
 };
