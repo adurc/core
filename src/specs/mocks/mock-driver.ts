@@ -6,6 +6,7 @@ import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
 import { AdurcUpdateArgs } from '../../interfaces/client/update';
 import { AdurcContext } from '../../interfaces/context';
 import { AdurcDriver } from '../../interfaces/driver';
+import { AdurcModel } from '../../interfaces/model';
 
 class MockDriver implements AdurcDriver {
 
@@ -21,19 +22,19 @@ class MockDriver implements AdurcDriver {
     init(): Promise<void> {
         return Promise.resolve();
     }
-    createMany(_args: AdurcCreateArgs<unknown, never>): Promise<BatchResult<unknown>> {
+    createMany(_model: AdurcModel, _args: AdurcCreateArgs<unknown, never>): Promise<BatchResult<unknown>> {
         return Promise.resolve({ count: 0, returning: [] });
     }
-    findMany(_args: AdurcFindManyArgs<unknown>): Promise<unknown[]> {
+    findMany(_model: AdurcModel, _args: AdurcFindManyArgs<unknown>): Promise<unknown[]> {
         return Promise.resolve([]);
     }
-    updateMany(_args: AdurcUpdateArgs<unknown, never>): Promise<BatchResult<unknown>> {
+    updateMany(_model: AdurcModel, _args: AdurcUpdateArgs<unknown, never>): Promise<BatchResult<unknown>> {
         return Promise.resolve({ count: 0, returning: [] });
     }
-    deleteMany(_args: AdurcDeleteArgs<unknown>): Promise<BatchResult<unknown>> {
+    deleteMany(_model: AdurcModel, _args: AdurcDeleteArgs<unknown>): Promise<BatchResult<unknown>> {
         return Promise.resolve({ count: 0, returning: [] });
     }
-    aggregate(_args: AdurcAggregateArgs<unknown>): Promise<unknown> {
+    aggregate(_model: AdurcModel, _args: AdurcAggregateArgs<unknown>): Promise<unknown> {
         return Promise.resolve({ count: 0, returning: [] });
     }
 

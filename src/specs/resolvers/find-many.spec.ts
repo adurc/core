@@ -28,7 +28,7 @@ describe('resolver find many tests', () => {
         await findManyResolver(context, adurcUserModel, args);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
-        expect(driver.findMany).toHaveBeenCalledWith(args);
+        expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, args);
     });
 
 });
