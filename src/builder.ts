@@ -1,12 +1,13 @@
 import { Adurc } from './adurc';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
-import { AdurcContext } from './interfaces/context';
+import { AdurcContextBuilder } from './interfaces/context';
+
 
 export class AdurcBuilder {
 
     private _builders: BuilderGeneratorFunction[];
 
-    private _context: AdurcContext;
+    private _context: AdurcContextBuilder;
 
     constructor() {
         this._builders = [];
@@ -33,6 +34,19 @@ export class AdurcBuilder {
             const registers = stages[i];
             let register: BuilderGenerator;
 
+            switch (i as BuilderStage) {
+                case BuilderStage.OnInit:
+                    // validate models, directives, etc..
+                    break;
+                case BuilderStage.OnAfterInit:
+                    this._context.adurc = new Adurc({
+                        directives: this._context.directives,
+                        models: this._context.models,
+                        sources: this._context.sources,
+                    });
+                    break;
+            }
+
             while ((register = registers.shift())) {
                 const iterator = await register.next();
                 if (!iterator.done && i !== BuilderStage.OnAfterInit) {
@@ -47,10 +61,6 @@ export class AdurcBuilder {
             }
         }
 
-        // TODO: Pending validate directives
-        // TODO: Pending validate sources
-        // TODO: Pending validate models
-
-        return new Adurc(this._context);
+        return this._context.adurc;
     }
 }
