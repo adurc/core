@@ -34,11 +34,15 @@ export class AdurcBuilder {
             const registers = stages[i];
             let register: BuilderGenerator;
 
+            console.log('[adurc] builder stage: ' + BuilderStage[i]);
+
             switch (i as BuilderStage) {
                 case BuilderStage.OnInit:
+                    console.log('[adurc] validating context');
                     // validate models, directives, etc..
                     break;
                 case BuilderStage.OnAfterInit:
+                    console.log('[adurc] create adurc instance');
                     this._context.adurc = new Adurc({
                         directives: this._context.directives,
                         models: this._context.models,
@@ -50,9 +54,10 @@ export class AdurcBuilder {
             while ((register = registers.shift())) {
                 const iterator = await register.next();
                 if (!iterator.done && i !== BuilderStage.OnAfterInit) {
-                    const nextStage = (i + 1) as BuilderStage;
+                    let nextStage = (i + 1) as BuilderStage;
                     if (iterator.value) {
-                        if (iterator.value <= i) {
+                        nextStage = iterator.value;
+                        if (nextStage <= i) {
                             throw new Error('Register exception trying go to old stage');
                         }
                     }
