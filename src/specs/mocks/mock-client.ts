@@ -7,6 +7,30 @@ interface MyModels {
     post: PostModel;
 }
 
+const unknownClient: AdurcClient = null;
+
+unknownClient.user.findMany({
+    select: {
+        published: true,
+    },
+    include: {
+        author: {
+            age: true,
+        },
+    },
+    where: {
+        authorId: {
+            equals: 1
+        },
+    }
+});
+
+unknownClient.user.findMany({
+    orderBy: {
+        email: 'asc',
+    },
+});
+
 const client: AdurcClient<MyModels> = null;
 
 client.post.findMany({
@@ -19,9 +43,6 @@ client.post.findMany({
         authorId: {
             equals: 1
         },
-        author: {
-
-        },
     },
     include: {
         author: {
@@ -29,6 +50,18 @@ client.post.findMany({
         },
     },
 });
+
+client.user.createMany({
+    data: [{
+        name: 'pep',
+        posts: {
+            connect: [{
+                id: 1,
+            }]
+        }
+    }],
+});
+
 
 client.post.createMany({
     data: [{
@@ -41,7 +74,14 @@ client.post.createMany({
 
 client.post.updateMany({
     where: { id: 1 },
-    data: { published: true },
+    data: {
+        published: true,
+        author: {
+            connect: {
+                id: 1,
+            }
+        }
+    },
 });
 
 client.post.deleteMany({

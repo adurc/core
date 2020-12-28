@@ -1,0 +1,1 @@
+export type AdurcModelUntyped = Record<string, unknown>;

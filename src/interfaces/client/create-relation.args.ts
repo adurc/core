@@ -12,3 +12,8 @@ export type AdurcCreateRelationArgs<T, K extends keyof T = keyof T> = {
         create: { [P in K]?: T[P] };
     }
 }
+
+export type AdurcCreateRelationEnumerableArgs<T, K extends keyof T = keyof T> = {
+    connect?: { [P in K]?: T[P] }[];
+    create?: { [P in K]?: T[P] }[];
+}
