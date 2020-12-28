@@ -4,7 +4,7 @@ import { AdurcCreateArgs } from './create.args';
 import { AdurcDeleteArgs } from './delete.args';
 import { AdurcFindManyArgs } from './find-many.args';
 import { AdurcModelUntyped } from './model';
-import { AdurcUpdateArgs } from './update';
+import { AdurcUpdateArgs } from './update.args';
 
 export type AdurcClientMethodFindMany<T = AdurcModelUntyped> = (args: AdurcFindManyArgs<T>) => Promise<T[]>;
 export type AdurcClientMethodCreateMany<T = AdurcModelUntyped> = (args: AdurcCreateArgs<T>) => Promise<BatchResult<T>>;

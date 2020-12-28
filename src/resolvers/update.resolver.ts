@@ -1,6 +1,6 @@
 import v8 from 'v8';
 import { BatchResult } from '../interfaces/client/batch.result';
-import { AdurcUpdateArgs } from '../interfaces/client/update';
+import { AdurcUpdateArgs } from '../interfaces/client/update.args';
 import { AdurcContext } from '../interfaces/context';
 import { AdurcModel } from '../interfaces/model';
 

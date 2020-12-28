@@ -74,14 +74,14 @@ client.post.createMany({
 
 client.post.updateMany({
     where: { id: 1 },
-    data: {
+    data: [{
         published: true,
         author: {
             connect: {
                 id: 1,
             }
         }
-    },
+    }],
 });
 
 client.post.deleteMany({

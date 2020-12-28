@@ -3,7 +3,7 @@ import { BatchResult } from '../../interfaces/client/batch.result';
 import { AdurcCreateArgs } from '../../interfaces/client/create.args';
 import { AdurcDeleteArgs } from '../../interfaces/client/delete.args';
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
-import { AdurcUpdateArgs } from '../../interfaces/client/update';
+import { AdurcUpdateArgs } from '../../interfaces/client/update.args';
 import { AdurcContext } from '../../interfaces/context';
 import { AdurcDriver } from '../../interfaces/driver';
 import { AdurcModel } from '../../interfaces/model';

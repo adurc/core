@@ -4,7 +4,7 @@ import { AdurcCreateArgs } from './client/create.args';
 import { AdurcDeleteArgs } from './client/delete.args';
 import { AdurcFindManyArgs } from './client/find-many.args';
 import { AdurcModelUntyped } from './client/model';
-import { AdurcUpdateArgs } from './client/update';
+import { AdurcUpdateArgs } from './client/update.args';
 import { AdurcModel } from './model';
 
 export interface AdurcDriver {
