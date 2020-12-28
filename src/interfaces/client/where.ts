@@ -75,7 +75,7 @@ export type AdurcModelWhereTyped<T, K extends keyof T = keyof T> = {
 }
 
 export type AdurcModelWhereUntyped = {
-    [field: string]: AdurcModelWhereString | AdurcModelWhereInt | AdurcModelWhereBoolean | AdurcModelWhereDate | AdurcModelWhereUntyped | AdurcModelWhereRelationUntyped;
+    [field: string]: string | AdurcModelWhereString | number | AdurcModelWhereInt | boolean | AdurcModelWhereBoolean | Date | AdurcModelWhereDate | AdurcModelWhereUntyped | AdurcModelWhereRelationUntyped;
 } & {
     AND?: AdurcModelWhereUntyped[];
     OR?: AdurcModelWhereUntyped[];
