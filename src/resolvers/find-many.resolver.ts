@@ -5,27 +5,34 @@ import { AdurcContext } from '../interfaces/context';
 import { AdurcModel } from '../interfaces/model';
 import { ResolverMethod } from './resolver.method';
 
-const prepareSourceArgs = (context: AdurcContext, model: AdurcModel, args: AdurcFindManyArgs) => {
+const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: AdurcFindManyArgs) => {
     const output: AdurcFindManyArgs = v8.deserialize(v8.serialize(args));
 
-    for (const fieldName in output.include) {
-        const field = model.fields.find(x => x.name === fieldName);
-        if (!field) {
-            throw new Error(`Unexpected field name ${fieldName} in model ${model.name}`);
-        }
+    // for (const fieldName in output.include) {
+    //     const includeValue = output.include[fieldName];
+    //     const field = model.fields.find(x => x.name === fieldName);
 
-        const modelRelated = context.models.find(x => x.name === field.type);
-        if (!modelRelated) {
-            continue; // it's a field
-        }
+    //     if (!field) {
+    //         throw new Error(`Unexpected field name ${fieldName} in model ${model.name}`);
+    //     }
 
-        if (modelRelated.source !== model.source) {
-            // TODO: store path for resolve when we'll get response of parent source
-            continue;
-        }
+    //     const modelRelated = context.models.find(x => x.name === field.type);
+    //     if (!modelRelated) {
+    //         continue; // it's a field
+    //     }
 
-        output.include[fieldName] = prepareSourceArgs(context, modelRelated, output.include[fieldName]);
-    }
+    //     if (modelRelated.source !== model.source) {
+    //         // TODO: store path for resolve when we'll get response of parent source
+    //         continue;
+    //     }
+
+
+    //     if (includeValue === true) {
+    //         output.include[fieldName] = true;
+    //     } else if (typeof includeValue === 'object') {
+    //         output.include[fieldName] = prepareSourceArgs(context, modelRelated, includeValue);
+    //     }
+    // }
 
     return output;
 };
