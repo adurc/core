@@ -8,18 +8,19 @@ import createManyResolver from './resolvers/create-many.resolver';
 import updateManyResolver from './resolvers/update.resolver';
 import deleteManyResolver from './resolvers/delete-many.resolver';
 import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany } from './interfaces/client/methods';
+import { AdurcModelUntyped } from './interfaces/client/model';
 
-export class Adurc<T = Record<string, unknown>>  {
-    private _client: AdurcClient<T>;
+export class Adurc<T = AdurcModelUntyped>  {
+    private _client: AdurcClient;
 
     public get client(): AdurcClient<T> {
-        return this._client;
+        return this._client as unknown as AdurcClient<T>;
     }
 
     constructor(
         public readonly context: AdurcContext,
     ) {
-        this._client = this.generateProxyClient() as AdurcClient<T>;
+        this._client = this.generateProxyClient();
     }
 
     private generateProxyClient(): AdurcClient {

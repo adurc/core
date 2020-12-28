@@ -1,4 +1,5 @@
 
+import { AdurcModelUntyped } from '../interfaces/client/model';
 import v8 from 'v8';
 import { AdurcFindManyArgs } from '../interfaces/client/find-many.args';
 import { AdurcContext } from '../interfaces/context';
@@ -37,7 +38,7 @@ const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: Adu
     return output;
 };
 
-const findManyResolver: ResolverMethod<AdurcFindManyArgs, unknown[]> = async (
+const findManyResolver: ResolverMethod<AdurcFindManyArgs, AdurcModelUntyped[]> = async (
     context,
     model,
     args,
