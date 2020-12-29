@@ -12,6 +12,8 @@ export type AggregateNumber<T> = T extends AdurcModelUntyped ? AggregateNumberUn
 export type AdurcAggregateArgs<T = AdurcModelUntyped> = {
     where?: AdurcModelWhere<T>;
     orderBy?: AdurcModelOrderBy<T>;
+    take?: number;
+    skip?: number;
     count?: number;
     avg?: AggregateNumber<T>;
     sum?: AggregateNumber<T>;
