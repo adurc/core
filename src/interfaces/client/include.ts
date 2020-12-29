@@ -4,7 +4,7 @@ import { AdurcModelUntyped } from './model';
 import { AdurcModelSelect } from './select';
 
 export type AdurcModelIncludeTyped<T, K extends keyof NonPrimitiveFields<T> = keyof NonPrimitiveFields<T>> = {
-    [P in K]?: boolean | (
+    [P in K]?: true | (
         T[P] extends Array<infer U>
         ? AdurcFindManyArgs<U>
         : AdurcModelSelect<T[P]>
@@ -12,7 +12,7 @@ export type AdurcModelIncludeTyped<T, K extends keyof NonPrimitiveFields<T> = ke
 };
 
 export type AdrucModelIncludeUntyped = {
-    [field: string]: boolean | AdurcFindManyArgs | AdurcModelSelect;
+    [field: string]: true | AdurcFindManyArgs | AdurcModelSelect;
 }
 
 export type AdurcModelInclude<T> = T extends AdurcModelUntyped ? AdrucModelIncludeUntyped : AdurcModelIncludeTyped<T>;
