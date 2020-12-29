@@ -1,4 +1,5 @@
 import { AdurcAggregateArgs } from './client/aggregate.args';
+import { AggregateResult } from './client/aggregate.result';
 import { BatchResult } from './client/batch.result';
 import { AdurcCreateArgs } from './client/create.args';
 import { AdurcDeleteArgs } from './client/delete.args';
@@ -12,5 +13,5 @@ export interface AdurcDriver {
     findMany(model: AdurcModel, args: AdurcFindManyArgs): Promise<AdurcModelUntyped[]> | AdurcModelUntyped[];
     updateMany(model: AdurcModel, args: AdurcUpdateArgs): Promise<BatchResult> | BatchResult;
     deleteMany(model: AdurcModel, args: AdurcDeleteArgs): Promise<BatchResult> | BatchResult;
-    aggregate(model: AdurcModel, args: AdurcAggregateArgs): Promise<unknown> | unknown;
+    aggregate(model: AdurcModel, args: AdurcAggregateArgs): Promise<AggregateResult> | AggregateResult;
 }

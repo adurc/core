@@ -1,3 +1,4 @@
+import { AggregateResult } from 'src/interfaces/client/aggregate.result';
 import v8 from 'v8';
 import { AdurcAggregateArgs } from '../interfaces/client/aggregate.args';
 import { AdurcContext } from '../interfaces/context';
@@ -9,7 +10,7 @@ const prepareSourceArgs = (_context: AdurcContext, _model: AdurcModel, args: Adu
     return output;
 };
 
-const aggregateResolver: ResolverMethod<AdurcAggregateArgs, unknown> = async (
+const aggregateResolver: ResolverMethod<AdurcAggregateArgs, AggregateResult> = async (
     context,
     model,
     args,
