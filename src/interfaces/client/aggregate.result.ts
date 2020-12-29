@@ -8,6 +8,7 @@ export type AggregateNumberUntyped = { [field: string]: number };
 export type AggregateNumber<T> = T extends AdurcModelUntyped ? AggregateNumberUntyped : AggregateNumberTyped<T>;
 
 export type AggregateResult<T = AdurcModelUntyped> = {
+    count?: number;
     avg?: AggregateNumber<T>;
     sum?: AggregateNumber<T>;
     min?: AggregateNumber<T>;
