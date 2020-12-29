@@ -1,8 +1,17 @@
 import { NumberFields } from './common';
+import { AdurcModelUntyped } from './model';
+import { AdurcModelOrderBy } from './sort';
+import { AdurcModelWhere } from './where';
 
-export type AggregateNumber<T, K extends keyof NumberFields<T> = keyof NumberFields<T>> = { [P in K]?: boolean };
+export type AggregateNumberTyped<T, K extends keyof NumberFields<T> = keyof NumberFields<T>> = { [P in K]?: boolean };
 
-export type AdurcAggregateArgs<T = unknown> = {
+export type AggregateNumberUntyped = { [field: string]: boolean };
+
+export type AggregateNumber<T> = T extends AdurcModelUntyped ? AggregateNumberUntyped : AggregateNumberTyped<T>;
+
+export type AdurcAggregateArgs<T = AdurcModelUntyped> = {
+    where?: AdurcModelWhere<T>;
+    orderBy?: AdurcModelOrderBy<T>;
     count?: number;
     avg?: AggregateNumber<T>;
     sum?: AggregateNumber<T>;

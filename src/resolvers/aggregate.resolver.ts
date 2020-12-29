@@ -1,4 +1,4 @@
-import { AggregateResult } from 'src/interfaces/client/aggregate.result';
+import { AggregateResult } from '../interfaces/client/aggregate.result';
 import v8 from 'v8';
 import { AdurcAggregateArgs } from '../interfaces/client/aggregate.args';
 import { AdurcContext } from '../interfaces/context';
