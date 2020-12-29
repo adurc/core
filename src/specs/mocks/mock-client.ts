@@ -141,10 +141,14 @@ client.user.createMany({
     }],
 });
 
-client.user.aggregate({
+const avgAgeResult = client.user.aggregate({
     avg: {
         age: true,
     },
+});
+
+avgAgeResult.then(x => {
+    console.log('age avg: ' + JSON.stringify(x));
 });
 
 client.user.findMany({
