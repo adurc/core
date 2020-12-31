@@ -10,7 +10,7 @@ import deleteManyResolver from './resolvers/delete-many.resolver';
 import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany } from './interfaces/client/methods';
 import { AdurcModelUntyped } from './interfaces/client/model';
 
-export class Adurc<T = AdurcModelUntyped>  {
+export class Adurc<T = Record<string, AdurcModelUntyped>>  {
     private _client: AdurcClient;
 
     public get client(): AdurcClient<T> {

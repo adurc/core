@@ -8,5 +8,5 @@ export type AdurcUpdateArgs<T = AdurcModelUntyped> = {
     where?: AdurcModelWhere<T>;
     select?: AdurcModelSelect<T>;
     include?: AdurcModelInclude<T>;
-    data: Array<AdurcMutationData<T>>;
+    set: AdurcMutationData<T>;
 };

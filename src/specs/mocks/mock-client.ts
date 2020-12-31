@@ -1,3 +1,4 @@
+import { AdurcModelUntyped } from '../../interfaces/client/model';
 import { AdurcClient } from '../../interfaces/client';
 import { PostModel } from './mock-post-model';
 import { UserModel } from './mock-user-model';
@@ -7,9 +8,9 @@ interface MyModels {
     post: PostModel;
 }
 
-const unknownClient: AdurcClient = null;
+const unknownClient: AdurcClient<Record<string, AdurcModelUntyped>> = null;
 
-unknownClient.user.findMany({
+unknownClient['user'].findMany({
     select: {
         published: true,
     },
@@ -74,14 +75,14 @@ client.post.createMany({
 
 client.post.updateMany({
     where: { id: 1 },
-    data: [{
+    set: {
         published: true,
         author: {
             connect: {
                 id: 1,
             }
         }
-    }],
+    },
 });
 
 client.post.deleteMany({
