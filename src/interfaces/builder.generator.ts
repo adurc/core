@@ -7,4 +7,4 @@ export enum BuilderStage {
 
 export type BuilderGenerator = AsyncGenerator<BuilderStage, void>;
 
-export type BuilderGeneratorFunction = (builder: AdurcContextBuilder) => BuilderGenerator;
+export type BuilderGeneratorFunction = (builder: AdurcContextBuilder) => BuilderGenerator | void | Promise<void>;

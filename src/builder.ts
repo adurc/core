@@ -24,9 +24,22 @@ export class AdurcBuilder {
     }
 
     public async build(): Promise<Adurc> {
-        const stages: BuilderGenerator[][] = new Array(3);
 
-        stages[0] = [...this._builders.map(x => x(this._context))];
+        const generators: BuilderGenerator[] = [];
+
+        for (const builder of this._builders) {
+            const result = builder(this._context);
+            if (result instanceof Object) {
+                if ('then' in result) {
+                    await result;
+                } else if ('next' in result) {
+                    generators.push(result);
+                }
+            }
+        }
+
+        const stages: BuilderGenerator[][] = new Array(3);
+        stages[0] = generators;
         stages[BuilderStage.OnInit] = [];
         stages[BuilderStage.OnAfterInit] = [];
 
