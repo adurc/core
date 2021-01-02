@@ -5,6 +5,6 @@ export enum BuilderStage {
     OnAfterInit = 2,
 }
 
-export type BuilderGenerator = AsyncGenerator<BuilderStage, void>;
+export type BuilderGenerator = Generator<BuilderStage, void> | AsyncGenerator<BuilderStage, void>;
 
 export type BuilderGeneratorFunction = (builder: AdurcContextBuilder) => BuilderGenerator | void | Promise<void>;

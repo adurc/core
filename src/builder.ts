@@ -1,5 +1,6 @@
 import { Adurc } from './adurc';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
+import { AdurcModelUntyped } from './interfaces/client/model';
 import { AdurcContextBuilder } from './interfaces/context';
 
 
@@ -23,7 +24,7 @@ export class AdurcBuilder {
         return this;
     }
 
-    public async build(): Promise<Adurc> {
+    public async build<T = Record<string, AdurcModelUntyped>>(): Promise<Adurc<T>> {
 
         const generators: BuilderGenerator[] = [];
 
@@ -79,6 +80,6 @@ export class AdurcBuilder {
             }
         }
 
-        return this._context.adurc;
+        return this._context.adurc as unknown as Adurc<T>;
     }
 }

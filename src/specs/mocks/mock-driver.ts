@@ -6,20 +6,10 @@ import { AdurcDeleteArgs } from '../../interfaces/client/delete.args';
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
 import { AdurcModelUntyped } from '../../interfaces/client/model';
 import { AdurcUpdateArgs } from '../../interfaces/client/update.args';
-import { AdurcContext } from '../../interfaces/context';
 import { AdurcDriver } from '../../interfaces/driver';
 import { AdurcModel } from '../../interfaces/model';
 
 class MockDriver implements AdurcDriver {
-
-    public name: string;
-    public context: AdurcContext;
-
-    constructor(name: string) { this.name = name; }
-
-    setContext(context: AdurcContext): void {
-        this.context = context;
-    }
 
     init(): Promise<void> {
         return Promise.resolve();

@@ -1,22 +1,28 @@
 import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
-import { AdurcContext } from '../../interfaces/context';
 import { AdurcUpdateArgs } from '../../interfaces/client/update.args';
-import updateManyResolver from '../../resolvers/update.resolver';
+import { Adurc } from '../../adurc';
+import { AdurcBuilder } from '../../builder';
+import { AdurcMockModels } from '../mocks/mock-models';
 
 describe('resolver update many tests', () => {
 
-    it('call driver update many with single source', async () => {
-        const driver = new MockDriver('mock');
-        const context: AdurcContext = {
-            models: [adurcUserModel],
-            directives: [],
-            sources: [{
-                name: 'mock',
-                driver,
-            }]
-        };
+    let driver: MockDriver;
+    let adurc: Adurc<AdurcMockModels>;
 
+    beforeEach(async () => {
+        const builder = new AdurcBuilder();
+        builder.use(function (context) {
+            context.models.push(adurcUserModel);
+            context.sources.push({
+                name: 'mock',
+                driver: driver = new MockDriver()
+            });
+        });
+        adurc = await builder.build<AdurcMockModels>();
+    });
+
+    it('call driver update many with single source', async () => {
         const args: AdurcUpdateArgs<UserModel> = {
             set: {
                 name: 'New Name'
@@ -28,7 +34,7 @@ describe('resolver update many tests', () => {
 
         driver.updateMany = jest.fn(driver.updateMany.bind(driver));
 
-        await updateManyResolver(context, adurcUserModel, args as AdurcUpdateArgs);
+        await adurc.client.user.updateMany(args);
 
         expect(driver.updateMany).toHaveBeenCalledTimes(1);
         expect(driver.updateMany).toHaveBeenCalledWith(adurcUserModel, args);

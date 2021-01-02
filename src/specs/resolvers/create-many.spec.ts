@@ -1,26 +1,30 @@
 import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
-import { AdurcContext } from '../../interfaces/context';
 import { AdurcCreateArgs } from '../../interfaces/client/create.args';
-import createManyResolver from '../../resolvers/create-many.resolver';
+import { Adurc } from '../../adurc';
+import { AdurcMockModels } from '../mocks/mock-models';
+import { AdurcBuilder } from '../../builder';
 
 describe('resolver create many tests', () => {
 
-    it('call driver create many with single source', async () => {
-        const driver = new MockDriver('mock');
-        const context: AdurcContext = {
-            models: [adurcUserModel],
-            directives: [],
-            sources: [{
-                name: 'mock',
-                driver,
-            }]
-        };
+    let driver: MockDriver;
+    let adurc: Adurc<AdurcMockModels>;
 
+    beforeEach(async () => {
+        const builder = new AdurcBuilder();
+        builder.use(function (context) {
+            context.models.push(adurcUserModel);
+            context.sources.push({
+                name: 'mock',
+                driver: driver = new MockDriver()
+            });
+        });
+        adurc = await builder.build<AdurcMockModels>();
+    });
+
+    it('call driver create many with single source', async () => {
         const args: AdurcCreateArgs<UserModel> = {
-            data: [
-                { name: 'New user' }
-            ],
+            data: [{ name: 'test' }],
             select: {
                 email: true
             }
@@ -28,10 +32,10 @@ describe('resolver create many tests', () => {
 
         driver.createMany = jest.fn(driver.createMany.bind(driver));
 
-        await createManyResolver(context, adurcUserModel, args as AdurcCreateArgs);
+        await adurc.client.user.createMany(args);
 
         expect(driver.createMany).toHaveBeenCalledTimes(1);
         expect(driver.createMany).toHaveBeenCalledWith(adurcUserModel, args);
     });
-
+    
 });
