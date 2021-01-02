@@ -25,7 +25,7 @@ describe('resolver find many tests', () => {
 
         driver.findMany = jest.fn(driver.findMany.bind(driver));
 
-        await findManyResolver(context, adurcUserModel, args);
+        await findManyResolver(context, adurcUserModel, args as AdurcFindManyArgs);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, args);

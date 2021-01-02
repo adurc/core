@@ -1,10 +1,10 @@
-import { AggregateResult } from 'src/interfaces/client/aggregate.result';
-import { AdurcModelUntyped } from 'src/interfaces/client/model';
 import { AdurcAggregateArgs } from '../../interfaces/client/aggregate.args';
+import { AggregateResult } from '../../interfaces/client/aggregate.result';
 import { BatchResult } from '../../interfaces/client/batch.result';
 import { AdurcCreateArgs } from '../../interfaces/client/create.args';
 import { AdurcDeleteArgs } from '../../interfaces/client/delete.args';
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
+import { AdurcModelUntyped } from '../../interfaces/client/model';
 import { AdurcUpdateArgs } from '../../interfaces/client/update.args';
 import { AdurcContext } from '../../interfaces/context';
 import { AdurcDriver } from '../../interfaces/driver';
