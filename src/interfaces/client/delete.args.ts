@@ -1,10 +1,9 @@
-import { AdurcModelInclude } from './include';
+import { AdurcIncludeArgs } from './include.args';
 import { AdurcModelUntyped } from './model';
-import { AdurcModelSelect } from './select';
-import { AdurcModelWhere } from './where';
+import { AdurcSelectArgs } from './select.args';
+import { AdurcWhereArgs } from './where.args';
 
-export type AdurcDeleteArgs<T = AdurcModelUntyped> = {
-    where?: AdurcModelWhere<T>;
-    select?: AdurcModelSelect<T>;
-    include?: AdurcModelInclude<T>;
-};
+export type AdurcDeleteArgs<T = AdurcModelUntyped> =
+    AdurcWhereArgs<T>
+    & AdurcSelectArgs<T>
+    & AdurcIncludeArgs<T>;

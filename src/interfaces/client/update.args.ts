@@ -1,12 +1,13 @@
-import { AdurcModelInclude } from './include';
+import { AdurcIncludeArgs } from './include.args';
 import { AdurcModelUntyped } from './model';
 import { AdurcMutationData } from './mutation-data';
-import { AdurcModelSelect } from './select';
-import { AdurcModelWhere } from './where';
+import { AdurcSelectArgs } from './select.args';
+import { AdurcWhereArgs } from './where.args';
 
-export type AdurcUpdateArgs<T = AdurcModelUntyped> = {
-    where?: AdurcModelWhere<T>;
-    select?: AdurcModelSelect<T>;
-    include?: AdurcModelInclude<T>;
-    set: AdurcMutationData<T>;
-};
+export type AdurcUpdateArgs<T = AdurcModelUntyped> =
+    AdurcWhereArgs<T>
+    & AdurcSelectArgs<T>
+    & AdurcIncludeArgs<T>
+    & {
+        set: AdurcMutationData<T>;
+    };

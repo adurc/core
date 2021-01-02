@@ -1,14 +1,13 @@
-import { AdurcModelInclude } from './include';
+import { AdurcIncludeArgs } from './include.args';
 import { AdurcModelUntyped } from './model';
-import { AdurcModelSelect } from './select';
-import { AdurcModelOrderBy } from './sort';
-import { AdurcModelWhere } from './where';
+import { AdurcPaginationArgs } from './pagination.args';
+import { AdurcSelectArgs } from './select.args';
+import { AdurcOrderArgs } from './sort.args';
+import { AdurcWhereArgs } from './where.args';
 
-export type AdurcFindManyArgs<T = AdurcModelUntyped> = {
-    select?: AdurcModelSelect<T>;
-    include?: AdurcModelInclude<T>;
-    where?: AdurcModelWhere<T>;
-    orderBy?: AdurcModelOrderBy<T>;
-    take?: number;
-    skip?: number;
-};
+export type AdurcFindManyArgs<T = AdurcModelUntyped> =
+    AdurcSelectArgs<T>
+    & AdurcIncludeArgs<T>
+    & AdurcWhereArgs<T>
+    & AdurcOrderArgs<T>
+    & AdurcPaginationArgs;
