@@ -6,6 +6,8 @@ import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreate
 import { AdurcModelUntyped } from './interfaces/client/model';
 import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
 import { AdurcSource } from './interfaces/source';
+import { AdurcModelSelect } from './interfaces/client/select';
+import v8 from 'v8';
 
 export class Adurc<T = Record<string, AdurcModelUntyped>>  {
     private _client: AdurcClient;
@@ -104,11 +106,12 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
                 path: string,
                 modelAccessorName: string,
                 args: AdurcFindManyArgs,
+                collection: boolean,
                 relation: AdurcFieldReferenceRelation,
             }[] = [];
 
             const findRecursiveNestedIncludes = (nArgs: AdurcFindManyArgs) => {
-                const newArgs: AdurcFindManyArgs = { ...nArgs };
+                const newArgs: AdurcFindManyArgs = v8.deserialize(v8.serialize(nArgs));
                 delete newArgs.include;
 
                 for (const fieldName in nArgs.include) {
@@ -120,11 +123,15 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
                         if (!type.relation) {
                             throw new Error('Expected relation when sources are different');
                         }
+                        newArgs.select[type.relation.parentField] = true;
                         nestedIncludes.push({
                             path: fieldName,
                             relation: type.relation,
+                            collection: field.collection,
                             modelAccessorName: this._mapModelsWithAccessorNames.get(subModel.name),
-                            args: nArgs.include[fieldName] as AdurcFindManyArgs,
+                            args: field.collection
+                                ? nArgs.include[fieldName] as AdurcFindManyArgs
+                                : { take: 1, select: nArgs.include[fieldName] as AdurcModelSelect },
                         });
                     } else {
                         newArgs.include[fieldName] = nArgs.include[fieldName];
@@ -155,7 +162,17 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
                 const subResults = await this._client[sub.modelAccessorName].findMany(nestedArgs);
 
                 for (const result of results) {
-                    result[sub.path] = subResults.filter(x => x[sub.relation.childField] === result[sub.relation.parentField]);
+                    if (sub.collection) {
+                        result[sub.path] = subResults.filter(x => x[sub.relation.childField] === result[sub.relation.parentField]);
+                    } else {
+                        result[sub.path] = subResults.find(x => x[sub.relation.childField] === result[sub.relation.parentField]) ?? null;
+                    }
+                }
+
+                if (!(sub.relation.parentField in args.select)) {
+                    for (const result of results) {
+                        delete result[sub.relation.parentField];
+                    }
                 }
 
                 if (!(sub.relation.childField in sub.args.select)) {

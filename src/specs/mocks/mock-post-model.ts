@@ -9,7 +9,9 @@ export interface PostModel {
     published: boolean;
     authorId?: number;
     author?: UserModel;
+    someTagId?: number;
     tags: TagModel[];
+    someTag: TagModel;
 }
 
 export const adurcPostModel: AdurcModel = {
@@ -22,7 +24,9 @@ export const adurcPostModel: AdurcModel = {
         { name: 'content', type: 'string', nonNull: false, directives: [], collection: false, },
         { name: 'published', type: 'boolean', nonNull: true, directives: [], collection: false, },
         { name: 'authorId', type: 'int', nonNull: false, directives: [], collection: false, },
+        { name: 'someTagId', type: 'int', nonNull: false, directives: [], collection: false, },
         { name: 'author', type: { model: 'User', source: 'mock' }, nonNull: false, directives: [], collection: false, },
         { name: 'tags', type: { model: 'Tag', source: 'mock2', relation: { parentField: 'id', childField: 'userId' } }, nonNull: false, directives: [], collection: true, },
+        { name: 'someTag', type: { model: 'Tag', source: 'mock2', relation: { parentField: 'someTagId', childField: 'id' } }, nonNull: false, directives: [], collection: false, },
     ],
 };
