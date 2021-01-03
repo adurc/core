@@ -5,8 +5,8 @@ import { AdurcSelectArgs } from './select.args';
 
 
 export type AdurcCreateArgs<T = AdurcModelUntyped> =
-    AdurcSelectArgs<T>
-    & AdurcIncludeArgs<T>
+    Partial<AdurcSelectArgs<T>>
+    & Partial<AdurcIncludeArgs<T>>
     & {
         data: Array<AdurcMutationData<T>>;
     };

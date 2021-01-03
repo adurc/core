@@ -5,5 +5,5 @@ import { AdurcWhereArgs } from './where.args';
 
 export type AdurcDeleteArgs<T = AdurcModelUntyped> =
     AdurcWhereArgs<T>
-    & AdurcSelectArgs<T>
-    & AdurcIncludeArgs<T>;
+    & Partial<AdurcSelectArgs<T>>
+    & Partial<AdurcIncludeArgs<T>>;

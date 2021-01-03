@@ -11,13 +11,13 @@ export type AggregateNumberUntyped = { [field: string]: true };
 export type AggregateNumber<T = AdurcModelUntyped> = T extends AdurcModelUntyped ? AggregateNumberUntyped : AggregateNumberTyped<T>;
 
 export type AdurcAggregateArgs<T = AdurcModelUntyped> =
-    AdurcWhereArgs<T>
-    & AdurcOrderArgs<T>
-    & AdurcPaginationArgs
-    & {
-        count?: true;
-        avg?: AggregateNumber<T>;
-        sum?: AggregateNumber<T>;
-        min?: AggregateNumber<T>;
-        max?: AggregateNumber<T>;
-    };
+    Partial<AdurcWhereArgs<T>>
+    & Partial<AdurcOrderArgs<T>>
+    & Partial<AdurcPaginationArgs>
+    & Partial<{
+        count: true;
+        avg: AggregateNumber<T>;
+        sum: AggregateNumber<T>;
+        min: AggregateNumber<T>;
+        max: AggregateNumber<T>;
+    }>;

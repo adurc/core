@@ -6,8 +6,8 @@ import { AdurcOrderArgs } from './sort.args';
 import { AdurcWhereArgs } from './where.args';
 
 export type AdurcFindManyArgs<T = AdurcModelUntyped> =
-    AdurcSelectArgs<T>
-    & AdurcIncludeArgs<T>
-    & AdurcWhereArgs<T>
-    & AdurcOrderArgs<T>
-    & AdurcPaginationArgs;
+    Partial<AdurcSelectArgs<T>>
+    & Partial<AdurcIncludeArgs<T>>
+    & Partial<AdurcWhereArgs<T>>
+    & Partial<AdurcOrderArgs<T>>
+    & Partial<AdurcPaginationArgs>;

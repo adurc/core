@@ -2,7 +2,7 @@ import { AdurcClient } from './interfaces/client';
 import { AdurcFieldReference, AdurcFieldReferenceRelation, AdurcModel } from './interfaces/model';
 import { AdurcContext } from './interfaces/context';
 import camelCase from 'camelcase';
-import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany } from './interfaces/client/methods';
+import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany, AdurcClientMethodFindUnique } from './interfaces/client/methods';
 import { AdurcModelUntyped } from './interfaces/client/model';
 import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
 import { AdurcSource } from './interfaces/source';
@@ -49,10 +49,23 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
     private generateProxyModel(model: AdurcModel): AdurcClientMethods {
         return {
             aggregate: this.generateProxyMethodAggregate(model),
+            findUnique: this.generateProxyMethodFindUnique(model),
             findMany: this.generateProxyMethodFindMany(model),
             createMany: this.generateProxyMethodCreate(model),
             updateMany: this.generateProxyMethodUpdateMany(model),
             deleteMany: this.generateProxyMethodDelete(model),
+        };
+    }
+
+    private generateProxyMethodFindUnique(model: AdurcModel): AdurcClientMethodFindUnique {
+        const source = this.getSource(model.source);
+
+        return async (args) => {
+            const results = await source.driver.findMany(model, {
+                ...args,
+                take: 1,
+            });
+            return results.length > 0 ? results[0] : null;
         };
     }
 
