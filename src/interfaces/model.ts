@@ -13,7 +13,16 @@ export interface AdurcModel {
     directives: AdurcDirective[];
 }
 
-export type AdurcFieldReference = { model: string, source: string };
+export type AdurcFieldReferenceRelation = {
+    parentField: string,
+    childField: string,
+}
+
+export type AdurcFieldReference = {
+    model: string,
+    source: string,
+    relation?: AdurcFieldReferenceRelation,
+};
 
 export interface AdurcField {
     name: string;

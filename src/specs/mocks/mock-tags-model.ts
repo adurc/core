@@ -12,5 +12,6 @@ export const adurcTagModel: AdurcModel = {
     fields: [
         { name: 'id', type: 'int', nonNull: true, directives: [], collection: false, },
         { name: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'userId', type: 'int', nonNull: true, directives: [], collection: false, },
     ],
 };

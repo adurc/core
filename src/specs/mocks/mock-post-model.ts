@@ -23,6 +23,6 @@ export const adurcPostModel: AdurcModel = {
         { name: 'published', type: 'boolean', nonNull: true, directives: [], collection: false, },
         { name: 'authorId', type: 'int', nonNull: false, directives: [], collection: false, },
         { name: 'author', type: { model: 'User', source: 'mock' }, nonNull: false, directives: [], collection: false, },
-        { name: 'tags', type: { model: 'Tag', source: 'mock2' }, nonNull: false, directives: [], collection: true, },
+        { name: 'tags', type: { model: 'Tag', source: 'mock2', relation: { parentField: 'id', childField: 'userId' } }, nonNull: false, directives: [], collection: true, },
     ],
 };
