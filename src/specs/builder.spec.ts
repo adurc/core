@@ -9,7 +9,7 @@ describe('arduc builder tests', () => {
         const builder = new AdurcBuilder();
         const results: number[] = [];
 
-        builder.use(function (_builder) {
+        builder.use(function (_context) {
             results.push(1);
         });
 
@@ -22,7 +22,7 @@ describe('arduc builder tests', () => {
         const builder = new AdurcBuilder();
         const results: number[] = [];
 
-        builder.use(async function (_builder) {
+        builder.use(async function (_context) {
             results.push(1);
             return Promise.resolve();
         });
@@ -36,7 +36,7 @@ describe('arduc builder tests', () => {
         const builder = new AdurcBuilder();
         const results: number[] = [];
 
-        builder.use(async function* (_builder) {
+        builder.use(async function* (_context) {
             results.push(1);
             yield BuilderStage.OnInit;
             results.push(2);
@@ -54,25 +54,25 @@ describe('arduc builder tests', () => {
         const results: number[] = [];
 
         // raw function
-        builder.use(function (_builder) {
+        builder.use(function (_context) {
             results.push(1);
         });
 
         // raw async function
-        builder.use(async function (_builder) {
+        builder.use(async function (_context) {
             await new Promise(resolve => setTimeout(resolve, 100));
             results.push(2);
         });
 
         // generator
-        builder.use(function* (_builder) {
+        builder.use(function* (_context) {
             results.push(3);
             yield BuilderStage.OnAfterInit;
             results.push(4);
         });
 
         // async generator
-        builder.use(async function* (_builder) {
+        builder.use(async function* (_context) {
             await new Promise(resolve => setTimeout(resolve, 100));
             results.push(5);
             yield BuilderStage.OnInit;
@@ -89,7 +89,7 @@ describe('arduc builder tests', () => {
         const builder = new AdurcBuilder();
         const results: number[] = [];
 
-        builder.use(async function* (_builder) {
+        builder.use(async function* (_context) {
             results.push(10);
             yield BuilderStage.OnInit;
             results.push(11);
@@ -97,7 +97,7 @@ describe('arduc builder tests', () => {
             results.push(12);
         });
 
-        builder.use(async function* (_builder) {
+        builder.use(async function* (_context) {
             results.push(20);
             yield BuilderStage.OnInit;
             results.push(21);

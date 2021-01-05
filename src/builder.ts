@@ -2,6 +2,8 @@ import { Adurc } from './adurc';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
 import { AdurcModelUntyped } from './interfaces/client/model';
 import { AdurcContextBuilder } from './interfaces/context';
+import { IAdurcLogger, LogLevel } from './interfaces/logger';
+import { AdurcLoggerManager } from './logger-manager';
 
 
 export class AdurcBuilder {
@@ -13,10 +15,21 @@ export class AdurcBuilder {
     constructor() {
         this._builders = [];
         this._context = {
+            logger: new AdurcLoggerManager(),
             directives: [],
             models: [],
             sources: [],
         };
+    }
+
+    public setLogger(logger: IAdurcLogger): AdurcBuilder {
+        this._context.logger.setLogger(logger);
+        return this;
+    }
+
+    public setLogLevel(level: LogLevel): AdurcBuilder {
+        this._context.logger.setLogLevel(level);
+        return this;
     }
 
     public use(builder: BuilderGeneratorFunction): AdurcBuilder {
@@ -48,16 +61,17 @@ export class AdurcBuilder {
             const registers = stages[i];
             let register: BuilderGenerator;
 
-            console.log('[adurc] builder stage: ' + BuilderStage[i]);
+            this._context.logger.debug('[adurc] builder stage: ' + BuilderStage[i]);
 
             switch (i as BuilderStage) {
                 case BuilderStage.OnInit:
-                    console.log('[adurc] validating context');
+                    this._context.logger.debug('[adurc] validating context');
                     // validate models, directives, etc..
                     break;
                 case BuilderStage.OnAfterInit:
-                    console.log('[adurc] create adurc instance');
+                    this._context.logger.debug('[adurc] building adurc instance');
                     this._context.adurc = new Adurc({
+                        logger: this._context.logger,
                         directives: this._context.directives,
                         models: this._context.models,
                         sources: this._context.sources,
