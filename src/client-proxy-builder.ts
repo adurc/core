@@ -1,12 +1,12 @@
 import v8 from 'v8';
 import camelcase from 'camelcase';
-import { AdurcClient } from '.';
 import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
 import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodCreateMany, AdurcMethodDeleteMany, AdurcMethodFindMany, AdurcMethodUpdateMany } from './interfaces/client/methods';
 import { AdurcModelSelect } from './interfaces/client/select';
 import { AdurcModel, AdurcFieldReferenceRelation, AdurcFieldReference } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
 import { AdurcContextBuilder } from './interfaces/context';
+import { Adurc } from '.';
 
 export class AdurcClientBuilder {
     private _mapModelsWithAccessorNames: Map<string, string>;
@@ -19,8 +19,8 @@ export class AdurcClientBuilder {
         this._mapModels = new Map();
     }
 
-    public generateProxyClient(): AdurcClient {
-        const client: AdurcClient = {};
+    public generateProxyClient(): Adurc {
+        const client: Adurc = {};
 
         for (const source of this.context.sources) {
             this._mapSources.set(source.name, source);
@@ -39,7 +39,7 @@ export class AdurcClientBuilder {
         return client;
     }
 
-    private generateProxyModel(client: AdurcClient, model: AdurcModel): AdurcMethods {
+    private generateProxyModel(client: Adurc, model: AdurcModel): AdurcMethods {
         return {
             aggregate: this.generateProxyMethodAggregate(model),
             findUnique: this.generateProxyMethodFindUnique(model),
@@ -89,7 +89,7 @@ export class AdurcClientBuilder {
         };
     }
 
-    private generateProxyMethodFindMany(client: AdurcClient, model: AdurcModel): AdurcMethodFindMany {
+    private generateProxyMethodFindMany(client: Adurc, model: AdurcModel): AdurcMethodFindMany {
         const source = this.getSource(model.source);
 
         return async (args) => {
