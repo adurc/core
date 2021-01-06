@@ -1,9 +1,9 @@
 import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
 import { AdurcAggregateArgs } from '../../interfaces/client/aggregate.args';
-import { Adurc } from '../../adurc';
 import { AdurcBuilder } from '../../builder';
 import { AdurcMockModels } from '../mocks/mock-models';
+import { Adurc } from '../../interfaces/client';
 
 describe('resolver aggregate tests', () => {
 
@@ -13,8 +13,8 @@ describe('resolver aggregate tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(function (context) {
-            context.models.push(adurcUserModel);
-            context.sources.push({
+            context.addModel(adurcUserModel);
+            context.addSource({
                 name: 'mock',
                 driver: driver = new MockDriver()
             });
@@ -29,7 +29,7 @@ describe('resolver aggregate tests', () => {
 
         driver.aggregate = jest.fn(driver.aggregate.bind(driver));
 
-        await adurc.client.user.aggregate(args);
+        await adurc.user.aggregate(args);
 
         expect(driver.aggregate).toHaveBeenCalledTimes(1);
         expect(driver.aggregate).toHaveBeenCalledWith(adurcUserModel, args);

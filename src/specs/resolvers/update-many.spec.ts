@@ -1,9 +1,9 @@
 import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
 import { AdurcUpdateArgs } from '../../interfaces/client/update.args';
-import { Adurc } from '../../adurc';
 import { AdurcBuilder } from '../../builder';
 import { AdurcMockModels } from '../mocks/mock-models';
+import { Adurc } from '../../interfaces/client';
 
 describe('resolver update many tests', () => {
 
@@ -13,8 +13,8 @@ describe('resolver update many tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(function (context) {
-            context.models.push(adurcUserModel);
-            context.sources.push({
+            context.addModel(adurcUserModel);
+            context.addSource({
                 name: 'mock',
                 driver: driver = new MockDriver()
             });
@@ -24,6 +24,7 @@ describe('resolver update many tests', () => {
 
     it('call driver update many with single source', async () => {
         const args: AdurcUpdateArgs<UserModel> = {
+            where: {},
             set: {
                 name: 'New Name'
             },
@@ -34,7 +35,7 @@ describe('resolver update many tests', () => {
 
         driver.updateMany = jest.fn(driver.updateMany.bind(driver));
 
-        await adurc.client.user.updateMany(args);
+        await adurc.user.updateMany(args);
 
         expect(driver.updateMany).toHaveBeenCalledTimes(1);
         expect(driver.updateMany).toHaveBeenCalledWith(adurcUserModel, args);

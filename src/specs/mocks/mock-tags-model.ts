@@ -6,6 +6,7 @@ export interface TagModel {
 }
 
 export const adurcTagModel: AdurcModel = {
+    accessorName: 'tag',
     name: 'Tag',
     source: 'mock2',
     directives: [],

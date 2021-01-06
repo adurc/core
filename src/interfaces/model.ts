@@ -9,6 +9,7 @@ export interface AdurcDirective {
 export interface AdurcModel {
     source: string;
     name: string;
+    accessorName: string;
     fields: AdurcField[];
     directives: AdurcDirective[];
 }

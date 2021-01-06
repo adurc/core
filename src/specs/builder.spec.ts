@@ -1,6 +1,7 @@
 import { BuilderStage } from '../interfaces/builder.generator';
 import { AdurcBuilder } from '../builder';
 import { adurcUserModel } from './mocks/mock-user-model';
+import { adurcUserWithDirectiveModel } from './mocks/mock-user-with-directive-model';
 import MockDriver from './mocks/mock-driver';
 
 describe('arduc builder tests', () => {
@@ -110,17 +111,37 @@ describe('arduc builder tests', () => {
         expect(results).toStrictEqual([10, 20, 11, 21, 12, 22]);
     });
 
-    it('register model', async () => {
+    it('validate model source not registered', async () => {
         const builder = new AdurcBuilder();
 
         builder.use(function (context) {
-            context.sources.push({ name: 'mock', driver: new MockDriver() });
-            context.models.push(adurcUserModel);
+            context.addModel(adurcUserModel);
         });
 
-        const adurc = await builder.build();
+        await expect(builder.build()).rejects.toThrowError();
+    });
 
-        expect(adurc.context.models).toStrictEqual([adurcUserModel]);
+    it('validate model directives not registered', async () => {
+        const builder = new AdurcBuilder();
+
+        builder.use(function (context) {
+            context.addModel(adurcUserWithDirectiveModel);
+        });
+
+        await expect(builder.build()).rejects.toThrowError();
+    });
+
+    it('validate model directives registered', async () => {
+        const builder = new AdurcBuilder();
+
+        builder.use(function (context) {
+            context.addSource({ name: 'mock', driver: new MockDriver() });
+            context.addDirective({ composition: 'model', name: 'model', provider: 'adurc', args: { name: { type: 'string' } } });
+            context.addDirective({ composition: 'field', name: 'field', provider: 'adurc', args: { name: { type: 'string' } } });
+            context.addModel(adurcUserWithDirectiveModel);
+        });
+
+        await builder.build();
     });
 
 });

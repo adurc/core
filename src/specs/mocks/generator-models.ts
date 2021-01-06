@@ -6,17 +6,17 @@ import { adurcTagModel } from './mock-tags-model';
 import { adurcUserModel } from './mock-user-model';
 
 export function MockBuilderGenerator(context: AdurcContextBuilder): void {
-    context.models.push(adurcUserModel);
-    context.models.push(adurcProfileModel);
-    context.models.push(adurcPostModel);
-    context.models.push(adurcTagModel);
+    context.addModel(adurcUserModel);
+    context.addModel(adurcProfileModel);
+    context.addModel(adurcPostModel);
+    context.addModel(adurcTagModel);
 
-    context.sources.push({
+    context.addSource({
         name: 'mock',
         driver: new MockDriver()
     });
 
-    context.sources.push({
+    context.addSource({
         name: 'mock2',
         driver: new MockDriver()
     });

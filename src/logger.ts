@@ -1,7 +1,7 @@
 import { AdurcConsoleLogger } from './console-logger';
 import { IAdurcLogger, LogLevel } from './interfaces/logger';
 
-export class AdurcLoggerManager implements IAdurcLogger {
+export class AdurcLogger implements IAdurcLogger {
 
     private level: number;
     private logger: IAdurcLogger;

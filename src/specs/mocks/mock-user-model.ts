@@ -12,6 +12,7 @@ export interface UserModel {
 }
 
 export const adurcUserModel: AdurcModel = {
+    accessorName: 'user',
     name: 'User',
     source: 'mock',
     directives: [],

@@ -1,9 +1,9 @@
 import MockDriver from '../mocks/mock-driver';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
 import { AdurcCreateArgs } from '../../interfaces/client/create.args';
-import { Adurc } from '../../adurc';
 import { AdurcMockModels } from '../mocks/mock-models';
 import { AdurcBuilder } from '../../builder';
+import { Adurc } from '../../interfaces/client';
 
 describe('resolver create many tests', () => {
 
@@ -13,8 +13,8 @@ describe('resolver create many tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(function (context) {
-            context.models.push(adurcUserModel);
-            context.sources.push({
+            context.addModel(adurcUserModel);
+            context.addSource({
                 name: 'mock',
                 driver: driver = new MockDriver()
             });
@@ -32,7 +32,7 @@ describe('resolver create many tests', () => {
 
         driver.createMany = jest.fn(driver.createMany.bind(driver));
 
-        await adurc.client.user.createMany(args);
+        await adurc.user.createMany(args);
 
         expect(driver.createMany).toHaveBeenCalledTimes(1);
         expect(driver.createMany).toHaveBeenCalledWith(adurcUserModel, args);

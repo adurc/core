@@ -1,12 +1,13 @@
 import { AdurcFindManyArgs } from '../../interfaces/client/find-many.args';
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
-import { Adurc } from '../../adurc';
 import { AdurcBuilder } from '../../builder';
 import { AdurcMockModels } from '../mocks/mock-models';
 import { MockBuilderGenerator } from '../mocks/generator-models';
 import { AdurcDriver } from '../../interfaces/driver';
 import { adurcPostModel, PostModel } from '../mocks/mock-post-model';
 import { adurcTagModel, TagModel } from '../mocks/mock-tags-model';
+import { Adurc } from '../../interfaces/client';
+import { BuilderStage } from '../../interfaces/builder.generator';
 
 describe('resolver find many tests', () => {
     let driver: AdurcDriver;
@@ -16,9 +17,12 @@ describe('resolver find many tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(MockBuilderGenerator);
+        builder.use(function* (context) {
+            yield BuilderStage.OnAfterInit;
+            driver = context.sources.find(x => x.name === 'mock').driver;
+            driver2 = context.sources.find(x => x.name === 'mock2').driver;
+        });
         adurc = await builder.build<AdurcMockModels>();
-        driver = adurc.context.sources.find(x => x.name === 'mock').driver;
-        driver2 = adurc.context.sources.find(x => x.name === 'mock2').driver;
     });
 
     it('call driver find many with single source', async () => {
@@ -30,7 +34,7 @@ describe('resolver find many tests', () => {
 
         driver.findMany = jest.fn(driver.findMany.bind(driver));
 
-        await adurc.client.user.findMany(args);
+        await adurc.user.findMany(args);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, args);
@@ -56,7 +60,7 @@ describe('resolver find many tests', () => {
         driver.findMany = jest.fn(() => [{ id: 1 }, { id: 2 }]);
         driver2.findMany = jest.fn(() => [{ userId: 2, id: 50, name: 'tag one' }, { userId: 1, id: 100, name: 'tag two' }]);
 
-        const result = await adurc.client.post.findMany(postArgs);
+        const result = await adurc.post.findMany(postArgs);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcPostModel, {
@@ -101,7 +105,7 @@ describe('resolver find many tests', () => {
         driver.findMany = jest.fn(() => [{ id: 1, someTagId: 50 }, { id: 2, someTagId: 100 }]);
         driver2.findMany = jest.fn(() => [{ id: 50, name: 'tag one' }, { id: 100, name: 'tag two' }]);
 
-        const result = await adurc.client.post.findMany(postArgs);
+        const result = await adurc.post.findMany(postArgs);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcPostModel, {

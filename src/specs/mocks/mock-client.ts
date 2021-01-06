@@ -1,8 +1,8 @@
 import { AdurcModelUntyped } from '../../interfaces/client/model';
-import { AdurcClient } from '../../interfaces/client';
+import { Adurc } from '../../interfaces/client';
 import { AdurcMockModels } from './mock-models';
 
-const unknownClient: AdurcClient<Record<string, AdurcModelUntyped>> = null;
+const unknownClient: Adurc<Record<string, AdurcModelUntyped>> = null;
 
 unknownClient['user'].findMany({
     select: {
@@ -26,7 +26,7 @@ unknownClient.user.findMany({
     },
 });
 
-const client: AdurcClient<AdurcMockModels> = null;
+const client: Adurc<AdurcMockModels> = null;
 
 client.post.findMany({
     select: {

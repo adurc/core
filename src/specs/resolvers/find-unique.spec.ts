@@ -1,10 +1,11 @@
 import { adurcUserModel, UserModel } from '../mocks/mock-user-model';
-import { Adurc } from '../../adurc';
 import { AdurcBuilder } from '../../builder';
 import { AdurcMockModels } from '../mocks/mock-models';
 import { MockBuilderGenerator } from '../mocks/generator-models';
 import { AdurcDriver } from '../../interfaces/driver';
 import { AdurcFindUniqueArgs } from '../../interfaces/client/find-first.args';
+import { Adurc } from '../../interfaces/client';
+import { BuilderStage } from '../../interfaces/builder.generator';
 
 describe('resolver find unique tests', () => {
     let driver: AdurcDriver;
@@ -13,8 +14,11 @@ describe('resolver find unique tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(MockBuilderGenerator);
+        builder.use(function* (context) {
+            yield BuilderStage.OnAfterInit;
+            driver = context.sources.find(x => x.name === 'mock').driver;
+        });
         adurc = await builder.build<AdurcMockModels>();
-        driver = adurc.context.sources.find(x => x.name === 'mock').driver;
     });
 
     it('call driver find unique with single source', async () => {
@@ -29,7 +33,7 @@ describe('resolver find unique tests', () => {
 
         driver.findMany = jest.fn(driver.findMany.bind(driver));
 
-        await adurc.client.user.findUnique(args);
+        await adurc.user.findUnique(args);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, {

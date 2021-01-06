@@ -1,10 +1,10 @@
-import { Adurc } from './adurc';
+
+import { AdurcClientBuilder } from './client-proxy-builder';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
+import { Adurc } from './interfaces/client';
 import { AdurcModelUntyped } from './interfaces/client/model';
 import { AdurcContextBuilder } from './interfaces/context';
 import { IAdurcLogger, LogLevel } from './interfaces/logger';
-import { AdurcLoggerManager } from './logger-manager';
-
 
 export class AdurcBuilder {
 
@@ -14,12 +14,7 @@ export class AdurcBuilder {
 
     constructor() {
         this._builders = [];
-        this._context = {
-            logger: new AdurcLoggerManager(),
-            directives: [],
-            models: [],
-            sources: [],
-        };
+        this._context = new AdurcContextBuilder();
     }
 
     public setLogger(logger: IAdurcLogger): AdurcBuilder {
@@ -63,20 +58,14 @@ export class AdurcBuilder {
 
             this._context.logger.debug('[adurc] builder stage: ' + BuilderStage[i]);
 
-            switch (i as BuilderStage) {
-                case BuilderStage.OnInit:
-                    this._context.logger.debug('[adurc] validating context');
-                    // validate models, directives, etc..
-                    break;
-                case BuilderStage.OnAfterInit:
-                    this._context.logger.debug('[adurc] building adurc instance');
-                    this._context.adurc = new Adurc({
-                        logger: this._context.logger,
-                        directives: this._context.directives,
-                        models: this._context.models,
-                        sources: this._context.sources,
-                    });
-                    break;
+            const stage = i as BuilderStage;
+
+            if (stage === BuilderStage.OnInit) {
+                this._context.logger.debug('[adurc] validating context');
+                this.validateContext();
+                this._context.logger.debug('[adurc] generating proxy client');
+                const proxyClient = new AdurcClientBuilder(this._context);
+                this._context.setAdurc(proxyClient.generateProxyClient());
             }
 
             while ((register = registers.shift())) {
@@ -95,5 +84,51 @@ export class AdurcBuilder {
         }
 
         return this._context.adurc as unknown as Adurc<T>;
+    }
+
+    private validateContext() {
+        const errors: string[] = [];
+        for (const model of this._context.models) {
+            const source = this._context.sources.find(x => x.name === model.source);
+            if (!source) {
+                errors.push(`Model ${model.name} is in source ${model.source} but not found in context`);
+            }
+            for (const directive of model.directives) {
+                const definition = this._context.directives.find(x => x.provider === directive.provider && x.name === directive.name);
+
+                if (!definition) {
+                    errors.push(`Model ${model.name} has unknown directive ${directive.name} of provider ${directive.provider}`);
+                    continue;
+                }
+
+                if (definition.composition !== 'model') {
+
+                    errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider} on model, but this is restricted to ${definition.composition}`);
+                }
+
+                for (const argDefName in definition.args) {
+                    const argDef = definition.args[argDefName];
+                    const arg = directive.args[argDefName];
+                    if ((arg === undefined || arg === null) && argDef.nonNull === true) {
+                        errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider} without required argument ${argDefName}`);
+                    }
+                    if (arg !== null && arg !== undefined) {
+                        if (typeof argDef.type === 'string') {
+                            switch (argDef.type) {
+                                case 'boolean':
+                                    if (typeof arg !== 'boolean') {
+                                        errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider}, unexpected argument type`);
+                                    }
+                                    break;
+                                // TODO: Add other types
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (errors.length > 0) {
+            throw new Error('Error in adurc context:\n' + errors.map(x => `\t - ${x}`).join('\n'));
+        }
     }
 }

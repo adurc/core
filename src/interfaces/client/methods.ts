@@ -8,18 +8,18 @@ import { AdurcFindManyArgs } from './find-many.args';
 import { AdurcModelUntyped } from './model';
 import { AdurcUpdateArgs } from './update.args';
 
-export type AdurcClientMethodFindMany<T = AdurcModelUntyped> = (args: AdurcFindManyArgs<T>) => Promise<T[]>;
-export type AdurcClientMethodFindUnique<T = AdurcModelUntyped> = (args: AdurcFindUniqueArgs<T>) => Promise<T | null>;
-export type AdurcClientMethodCreateMany<T = AdurcModelUntyped> = (args: AdurcCreateArgs<T>) => Promise<BatchResult<T>>;
-export type AdurcClientMethodUpdateMany<T = AdurcModelUntyped> = (args: AdurcUpdateArgs<T>) => Promise<BatchResult<T>>;
-export type AdurcClientMethodDeleteMany<T = AdurcModelUntyped> = (args: AdurcDeleteArgs<T>) => Promise<BatchResult<T>>;
-export type AdurcClientMethodAggregate<T = AdurcModelUntyped> = (args: AdurcAggregateArgs<T>) => Promise<AggregateResult<T>>;
+export type AdurcMethodFindMany<T = AdurcModelUntyped> = (args: AdurcFindManyArgs<T>) => Promise<T[]>;
+export type AdurcMethodFindUnique<T = AdurcModelUntyped> = (args: AdurcFindUniqueArgs<T>) => Promise<T | null>;
+export type AdurcMethodCreateMany<T = AdurcModelUntyped> = (args: AdurcCreateArgs<T>) => Promise<BatchResult<T>>;
+export type AdurcMethodUpdateMany<T = AdurcModelUntyped> = (args: AdurcUpdateArgs<T>) => Promise<BatchResult<T>>;
+export type AdurcMethodDeleteMany<T = AdurcModelUntyped> = (args: AdurcDeleteArgs<T>) => Promise<BatchResult<T>>;
+export type AdurcMethodAggregate<T = AdurcModelUntyped> = (args: AdurcAggregateArgs<T>) => Promise<AggregateResult<T>>;
 
-export type AdurcClientMethods<T = AdurcModelUntyped> = {
-    findMany: AdurcClientMethodFindMany<T>;
-    findUnique: AdurcClientMethodFindUnique<T>;
-    createMany: AdurcClientMethodCreateMany<T>;
-    updateMany: AdurcClientMethodUpdateMany<T>;
-    deleteMany: AdurcClientMethodDeleteMany<T>;
-    aggregate: AdurcClientMethodAggregate<T>;
+export type AdurcMethods<T = AdurcModelUntyped> = {
+    findMany: AdurcMethodFindMany<T>;
+    findUnique: AdurcMethodFindUnique<T>;
+    createMany: AdurcMethodCreateMany<T>;
+    updateMany: AdurcMethodUpdateMany<T>;
+    deleteMany: AdurcMethodDeleteMany<T>;
+    aggregate: AdurcMethodAggregate<T>;
 };

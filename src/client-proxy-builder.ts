@@ -1,34 +1,25 @@
-import { AdurcClient } from './interfaces/client';
-import { AdurcFieldReference, AdurcFieldReferenceRelation, AdurcModel } from './interfaces/model';
-import { AdurcContext } from './interfaces/context';
-import camelCase from 'camelcase';
-import { AdurcClientMethods, AdurcClientMethodAggregate, AdurcClientMethodCreateMany, AdurcClientMethodDeleteMany, AdurcClientMethodFindMany, AdurcClientMethodUpdateMany, AdurcClientMethodFindUnique } from './interfaces/client/methods';
-import { AdurcModelUntyped } from './interfaces/client/model';
-import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
-import { AdurcSource } from './interfaces/source';
-import { AdurcModelSelect } from './interfaces/client/select';
 import v8 from 'v8';
+import camelcase from 'camelcase';
+import { AdurcClient } from '.';
+import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
+import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodCreateMany, AdurcMethodDeleteMany, AdurcMethodFindMany, AdurcMethodUpdateMany } from './interfaces/client/methods';
+import { AdurcModelSelect } from './interfaces/client/select';
+import { AdurcModel, AdurcFieldReferenceRelation, AdurcFieldReference } from './interfaces/model';
+import { AdurcSource } from './interfaces/source';
+import { AdurcContextBuilder } from './interfaces/context';
 
-export class Adurc<T = Record<string, AdurcModelUntyped>>  {
-    private _client: AdurcClient;
+export class AdurcClientBuilder {
     private _mapModelsWithAccessorNames: Map<string, string>;
     private _mapSources: Map<string, AdurcSource>;
     private _mapModels: Map<string, Map<string, AdurcModel>>;
 
-    public get client(): AdurcClient<T> {
-        return this._client as unknown as AdurcClient<T>;
-    }
-
-    constructor(
-        public readonly context: AdurcContext,
-    ) {
+    constructor(private context: AdurcContextBuilder) {
         this._mapModelsWithAccessorNames = new Map();
         this._mapSources = new Map();
         this._mapModels = new Map();
-        this._client = this.generateProxyClient();
     }
 
-    private generateProxyClient(): AdurcClient {
+    public generateProxyClient(): AdurcClient {
         const client: AdurcClient = {};
 
         for (const source of this.context.sources) {
@@ -40,26 +31,26 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
             const map = this._mapModels.get(model.source);
             map.set(model.name, model);
 
-            const accessorName = camelCase(model.name);
+            const accessorName = camelcase(model.name);
             this._mapModelsWithAccessorNames.set(model.name, accessorName);
-            client[accessorName] = this.generateProxyModel(model);
+            client[accessorName] = this.generateProxyModel(client, model);
         }
 
         return client;
     }
 
-    private generateProxyModel(model: AdurcModel): AdurcClientMethods {
+    private generateProxyModel(client: AdurcClient, model: AdurcModel): AdurcMethods {
         return {
             aggregate: this.generateProxyMethodAggregate(model),
             findUnique: this.generateProxyMethodFindUnique(model),
-            findMany: this.generateProxyMethodFindMany(model),
+            findMany: this.generateProxyMethodFindMany(client, model),
             createMany: this.generateProxyMethodCreate(model),
             updateMany: this.generateProxyMethodUpdateMany(model),
             deleteMany: this.generateProxyMethodDelete(model),
         };
     }
 
-    private generateProxyMethodFindUnique(model: AdurcModel): AdurcClientMethodFindUnique {
+    private generateProxyMethodFindUnique(model: AdurcModel): AdurcMethodFindUnique {
         const source = this.getSource(model.source);
 
         return async (args) => {
@@ -71,7 +62,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
         };
     }
 
-    private generateProxyMethodAggregate(model: AdurcModel): AdurcClientMethodAggregate {
+    private generateProxyMethodAggregate(model: AdurcModel): AdurcMethodAggregate {
         const source = this.getSource(model.source);
 
         return async (args) => {
@@ -80,7 +71,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
         };
     }
 
-    private generateProxyMethodCreate(model: AdurcModel): AdurcClientMethodCreateMany {
+    private generateProxyMethodCreate(model: AdurcModel): AdurcMethodCreateMany {
         const source = this.getSource(model.source);
 
         return async (args) => {
@@ -89,7 +80,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
         };
     }
 
-    private generateProxyMethodDelete(model: AdurcModel): AdurcClientMethodDeleteMany {
+    private generateProxyMethodDelete(model: AdurcModel): AdurcMethodDeleteMany {
         const source = this.getSource(model.source);
 
         return async (args) => {
@@ -98,7 +89,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
         };
     }
 
-    private generateProxyMethodFindMany(model: AdurcModel): AdurcClientMethodFindMany {
+    private generateProxyMethodFindMany(client: AdurcClient, model: AdurcModel): AdurcMethodFindMany {
         const source = this.getSource(model.source);
 
         return async (args) => {
@@ -159,7 +150,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
                     }
                 };
 
-                const subResults = await this._client[sub.modelAccessorName].findMany(nestedArgs);
+                const subResults = await client[sub.modelAccessorName].findMany(nestedArgs);
 
                 for (const result of results) {
                     if (sub.collection) {
@@ -186,7 +177,7 @@ export class Adurc<T = Record<string, AdurcModelUntyped>>  {
         };
     }
 
-    private generateProxyMethodUpdateMany(model: AdurcModel): AdurcClientMethodUpdateMany {
+    private generateProxyMethodUpdateMany(model: AdurcModel): AdurcMethodUpdateMany {
         const source = this.getSource(model.source);
 
         return async (args) => {

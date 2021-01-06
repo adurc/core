@@ -1,5 +1,5 @@
-import { Adurc } from '../../adurc';
 import { AdurcBuilder } from '../../builder';
+import { Adurc } from '../../interfaces/client';
 import { AdurcDeleteArgs } from '../../interfaces/client/delete.args';
 import MockDriver from '../mocks/mock-driver';
 import { AdurcMockModels } from '../mocks/mock-models';
@@ -13,8 +13,8 @@ describe('resolver delete many tests', () => {
     beforeEach(async () => {
         const builder = new AdurcBuilder();
         builder.use(function (context) {
-            context.models.push(adurcUserModel);
-            context.sources.push({
+            context.addModel(adurcUserModel);
+            context.addSource({
                 name: 'mock',
                 driver: driver = new MockDriver()
             });
@@ -34,7 +34,7 @@ describe('resolver delete many tests', () => {
 
         driver.deleteMany = jest.fn(driver.deleteMany.bind(driver));
 
-        await adurc.client.user.deleteMany(args);
+        await adurc.user.deleteMany(args);
 
         expect(driver.deleteMany).toHaveBeenCalledTimes(1);
         expect(driver.deleteMany).toHaveBeenCalledWith(adurcUserModel, args);

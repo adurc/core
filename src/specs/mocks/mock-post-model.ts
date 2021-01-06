@@ -15,6 +15,7 @@ export interface PostModel {
 }
 
 export const adurcPostModel: AdurcModel = {
+    accessorName: 'post',
     name: 'Post',
     source: 'mock',
     directives: [],
