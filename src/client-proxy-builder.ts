@@ -1,5 +1,4 @@
 import v8 from 'v8';
-import camelcase from 'camelcase';
 import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
 import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodCreateMany, AdurcMethodDeleteMany, AdurcMethodFindMany, AdurcMethodUpdateMany } from './interfaces/client/methods';
 import { AdurcModelSelect } from './interfaces/client/select';
@@ -9,12 +8,10 @@ import { AdurcContextBuilder } from './interfaces/context';
 import { Adurc } from '.';
 
 export class AdurcClientBuilder {
-    private _mapModelsWithAccessorNames: Map<string, string>;
     private _mapSources: Map<string, AdurcSource>;
     private _mapModels: Map<string, Map<string, AdurcModel>>;
 
     constructor(private context: AdurcContextBuilder) {
-        this._mapModelsWithAccessorNames = new Map();
         this._mapSources = new Map();
         this._mapModels = new Map();
     }
@@ -30,10 +27,7 @@ export class AdurcClientBuilder {
         for (const model of this.context.models) {
             const map = this._mapModels.get(model.source);
             map.set(model.name, model);
-
-            const accessorName = camelcase(model.name);
-            this._mapModelsWithAccessorNames.set(model.name, accessorName);
-            client[accessorName] = this.generateProxyModel(client, model);
+            client[model.accessorName] = this.generateProxyModel(client, model);
         }
 
         return client;
@@ -103,7 +97,7 @@ export class AdurcClientBuilder {
 
             const findRecursiveNestedIncludes = (nArgs: AdurcFindManyArgs) => {
                 const newArgs: AdurcFindManyArgs = v8.deserialize(v8.serialize(nArgs));
-                delete newArgs.include;
+                newArgs.include = [] as never;
 
                 for (const fieldName in nArgs.include) {
                     const field = model.fields.find(x => x.name === fieldName);
@@ -119,7 +113,7 @@ export class AdurcClientBuilder {
                             path: fieldName,
                             relation: type.relation,
                             collection: field.collection,
-                            modelAccessorName: this._mapModelsWithAccessorNames.get(subModel.name),
+                            modelAccessorName: subModel.accessorName,
                             args: field.collection
                                 ? nArgs.include[fieldName] as AdurcFindManyArgs
                                 : { take: 1, select: nArgs.include[fieldName] as AdurcModelSelect },
