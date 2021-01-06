@@ -97,29 +97,32 @@ export class AdurcClientBuilder {
 
             const findRecursiveNestedIncludes = (nArgs: AdurcFindManyArgs) => {
                 const newArgs: AdurcFindManyArgs = v8.deserialize(v8.serialize(nArgs));
-                newArgs.include = [] as never;
+                delete newArgs.include;
+                
+                if ('include' in nArgs) {
+                    for (const fieldName in nArgs.include) {
+                        const field = model.fields.find(x => x.name === fieldName);
+                        const type = field.type as AdurcFieldReference;
+                        const subModel = this._mapModels.get(type.source).get(type.model);
 
-                for (const fieldName in nArgs.include) {
-                    const field = model.fields.find(x => x.name === fieldName);
-                    const type = field.type as AdurcFieldReference;
-                    const subModel = this._mapModels.get(type.source).get(type.model);
-
-                    if (type.source !== model.source || type.relation) {
-                        if (!type.relation) {
-                            throw new Error('Expected relation when sources are different');
+                        if (type.source !== model.source || type.relation) {
+                            if (!type.relation) {
+                                throw new Error('Expected relation when sources are different');
+                            }
+                            newArgs.select[type.relation.parentField] = true;
+                            nestedIncludes.push({
+                                path: fieldName,
+                                relation: type.relation,
+                                collection: field.collection,
+                                modelAccessorName: subModel.accessorName,
+                                args: field.collection
+                                    ? nArgs.include[fieldName] as AdurcFindManyArgs
+                                    : { take: 1, select: nArgs.include[fieldName] as AdurcModelSelect },
+                            });
+                        } else {
+                            newArgs.include = newArgs.include ?? [] as never;
+                            newArgs.include[fieldName] = nArgs.include[fieldName];
                         }
-                        newArgs.select[type.relation.parentField] = true;
-                        nestedIncludes.push({
-                            path: fieldName,
-                            relation: type.relation,
-                            collection: field.collection,
-                            modelAccessorName: subModel.accessorName,
-                            args: field.collection
-                                ? nArgs.include[fieldName] as AdurcFindManyArgs
-                                : { take: 1, select: nArgs.include[fieldName] as AdurcModelSelect },
-                        });
-                    } else {
-                        newArgs.include[fieldName] = nArgs.include[fieldName];
                     }
                 }
 
