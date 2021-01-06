@@ -22,7 +22,7 @@ export class AdurcContextBuilder {
     public addSource(source: AdurcSource): AdurcContextBuilder {
         const exists = this._sources.findIndex(x => x.name === source.name) >= 0;
         if (exists) {
-            throw new Error(`Source '${source.name}' already registered`);
+            return;
         }
         this._sources.push(source);
         return this;
@@ -31,7 +31,7 @@ export class AdurcContextBuilder {
     public addModel(model: AdurcModelBuilder): AdurcContextBuilder {
         const exists = this._models.findIndex(x => x.source === model.source && x.name === model.name) >= 0;
         if (exists) {
-            throw new Error(`Model '${model.name}' of source '${model.source}' already registered`);
+            return;
         }
         this._models.push({ ...model, accessorName: camelcase(model.name) });
         return this;
@@ -40,7 +40,7 @@ export class AdurcContextBuilder {
     public addDirective(directive: AdurcDirectiveDefinition): AdurcContextBuilder {
         const exists = this._directives.findIndex(x => x.provider === directive.provider && x.name === directive.name) >= 0;
         if (exists) {
-            throw new Error(`Directive '${directive.name} of provider '${directive.provider}' already registered`);
+            return;
         }
         this._directives.push(directive);
         return this;
