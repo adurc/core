@@ -33,3 +33,5 @@ export interface AdurcField {
     collection: boolean;
     directives: AdurcDirective[];
 }
+
+export type AdurcModelSchema = Omit<AdurcModel, 'accessorName' | 'fields'> & { fields: Omit<AdurcField, 'accessorName'>[] };

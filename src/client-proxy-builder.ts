@@ -4,9 +4,10 @@ import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodC
 import { AdurcModelSelect } from './interfaces/client/select';
 import { AdurcModel, AdurcFieldReferenceRelation, AdurcFieldReference } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
-import { AdurcSchema, AdurcSchemaBuilder } from './interfaces/context';
+import { AdurcSchema } from './interfaces/context';
 import { Adurc } from '.';
 import { AdurcMiddleware, AdurcMiddlewareRequest } from './interfaces/middleware';
+import { AdurcSchemaBuilder } from './schema.builder';
 
 type FindStrategyRelation = {
     path: string,

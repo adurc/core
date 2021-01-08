@@ -13,7 +13,7 @@
     "build": "tsc",
     "lint": "eslint --fix src/**",
     "release": "standard-version",
-    "prepublishOnly": "npm test && npm run lint && npm run build",
+    "prerelease": "npm test && npm run lint && npm run build",
     "test": "jest --coverage"
   },
   "repository": {
