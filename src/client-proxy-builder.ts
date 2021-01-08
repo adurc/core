@@ -33,6 +33,7 @@ function withContextBuilder(ctx: Readonly<Record<string, unknown>>) {
 export class AdurcClientBuilder {
     private _mapSources: Map<string, AdurcSource>;
     private _mapModels: Map<string, Map<string, AdurcModel>>;
+    private _adurc: Adurc;
 
     constructor(private context: AdurcSchemaBuilder) {
         this._mapSources = new Map();
@@ -47,14 +48,14 @@ export class AdurcClientBuilder {
             middlewares: this.context.middlewares,
         };
 
-        const adurc: Adurc = {
+        this._adurc = {
             schema: schema,
             context: {},
             withContext: null,
             client: {},
         };
 
-        adurc.withContext = withContextBuilder.bind(adurc);
+        this._adurc.withContext = withContextBuilder.bind(this._adurc);
 
         for (const source of this.context.sources) {
             this._mapSources.set(source.name, source);
@@ -64,31 +65,31 @@ export class AdurcClientBuilder {
         for (const model of this.context.models) {
             const map = this._mapModels.get(model.source);
             map.set(model.name, model);
-            adurc.client[model.accessorName] = this.generateProxyModel(adurc, model);
+            this._adurc.client[model.accessorName] = this.generateProxyModel(model);
         }
 
-        return adurc;
+        return this._adurc;
     }
 
-    private generateProxyModel(adurc: Adurc, model: AdurcModel): AdurcMethods {
+    private generateProxyModel(model: AdurcModel): AdurcMethods {
         return {
-            aggregate: this.generateProxyMethodAggregate(adurc, model),
-            findUnique: this.generateProxyMethodFindUnique(adurc, model),
-            findMany: this.generateProxyMethodFindMany(adurc, model),
-            createMany: this.generateProxyMethodCreate(model),
+            aggregate: this.generateProxyMethodAggregate(model),
+            findUnique: this.generateProxyMethodFindUnique(model),
+            findMany: this.generateProxyMethodFindMany(model),
+            createMany: this.generateProxyMethodCreateMany(model),
             updateMany: this.generateProxyMethodUpdateMany(model),
-            deleteMany: this.generateProxyMethodDelete(model),
+            deleteMany: this.generateProxyMethodDeleteMany(model),
         };
     }
 
-    private generateProxyMethodAggregate(adurc: Adurc, model: AdurcModel): AdurcMethodAggregate {
+    private generateProxyMethodAggregate(model: AdurcModel): AdurcMethodAggregate {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.Aggregate);
 
         return async (args) => {
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: adurc.context,
+                ctx: this._adurc.context,
                 method: AdurcMethod.Aggregate,
                 model,
             };
@@ -103,25 +104,51 @@ export class AdurcClientBuilder {
         };
     }
 
-    private generateProxyMethodCreate(model: AdurcModel): AdurcMethodCreateMany {
+    private generateProxyMethodCreateMany(model: AdurcModel): AdurcMethodCreateMany {
         const source = this.getSource(model.source);
+        const middlewares = this.getMiddlewares(model, AdurcMethod.CreateMany);
 
         return async (args) => {
+            const req: AdurcMiddlewareRequest = {
+                args,
+                ctx: this._adurc.context,
+                method: AdurcMethod.CreateMany,
+                model,
+            };
+
+            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+
             const results = await source.driver.createMany(model, args);
+
+            await middlewareResolver(results);
+
             return results;
         };
     }
 
-    private generateProxyMethodDelete(model: AdurcModel): AdurcMethodDeleteMany {
+    private generateProxyMethodDeleteMany(model: AdurcModel): AdurcMethodDeleteMany {
         const source = this.getSource(model.source);
+        const middlewares = this.getMiddlewares(model, AdurcMethod.DeleteMany);
 
         return async (args) => {
+            const req: AdurcMiddlewareRequest = {
+                args,
+                ctx: this._adurc.context,
+                method: AdurcMethod.DeleteMany,
+                model,
+            };
+
+            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+
             const results = await source.driver.deleteMany(model, args);
+
+            await middlewareResolver(results);
+
             return results;
         };
     }
 
-    private generateProxyMethodFindUnique(adurc: Adurc, model: AdurcModel): AdurcMethodFindUnique {
+    private generateProxyMethodFindUnique(model: AdurcModel): AdurcMethodFindUnique {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.FindUnique);
 
@@ -130,14 +157,14 @@ export class AdurcClientBuilder {
 
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: adurc.context,
+                ctx: this._adurc.context,
                 method: AdurcMethod.FindUnique,
                 model,
             };
 
             const middlewareResolver = await this.startMiddlewares(middlewares, req);
 
-            const results: Record<string, unknown>[] = await this.resolveFindStrategy(adurc, source, model, args, strategy) as Record<string, unknown>[];
+            const results: Record<string, unknown>[] = await this.resolveFindStrategy(source, model, args, strategy) as Record<string, unknown>[];
             const result = results.length > 0 ? results[0] : null;
 
             await middlewareResolver(result);
@@ -146,7 +173,7 @@ export class AdurcClientBuilder {
         };
     }
 
-    private generateProxyMethodFindMany(adurc: Adurc, model: AdurcModel): AdurcMethodFindMany {
+    private generateProxyMethodFindMany(model: AdurcModel): AdurcMethodFindMany {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.FindMany);
 
@@ -155,14 +182,14 @@ export class AdurcClientBuilder {
 
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: adurc.context,
+                ctx: this._adurc.context,
                 method: AdurcMethod.FindMany,
                 model,
             };
 
             const middlewareResolver = await this.startMiddlewares(middlewares, req);
 
-            const results: Record<string, unknown>[] = await this.resolveFindStrategy(adurc, source, model, args, strategy) as Record<string, unknown>[];
+            const results: Record<string, unknown>[] = await this.resolveFindStrategy(source, model, args, strategy) as Record<string, unknown>[];
 
             await middlewareResolver(results);
 
@@ -172,9 +199,22 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodUpdateMany(model: AdurcModel): AdurcMethodUpdateMany {
         const source = this.getSource(model.source);
+        const middlewares = this.getMiddlewares(model, AdurcMethod.UpdateMany);
 
         return async (args) => {
+            const req: AdurcMiddlewareRequest = {
+                args,
+                ctx: this._adurc.context,
+                method: AdurcMethod.UpdateMany,
+                model,
+            };
+
+            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+
             const results = await source.driver.updateMany(model, args);
+
+            await middlewareResolver(results);
+
             return results;
         };
     }
@@ -257,7 +297,6 @@ export class AdurcClientBuilder {
     }
 
     private async resolveFindStrategy(
-        adurc: Adurc,
         source: AdurcSource,
         model: AdurcModel,
         args: AdurcFindManyArgs,
@@ -280,7 +319,7 @@ export class AdurcClientBuilder {
                 }
             };
 
-            const subResults = await adurc.client[sub.modelAccessorName].findMany(nestedArgs);
+            const subResults = await this._adurc.client[sub.modelAccessorName].findMany(nestedArgs);
 
             for (const result of results) {
                 if (sub.collection) {
