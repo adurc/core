@@ -1,4 +1,4 @@
-import { AdurcSchemaBuilder } from './context';
+import { AdurcSchemaBuilder } from '../schema.builder';
 
 export enum BuilderStage {
     OnInit = 1,
