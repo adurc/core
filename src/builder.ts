@@ -3,8 +3,8 @@ import { AdurcClientBuilder } from './client-proxy-builder';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
 import { Adurc } from './interfaces/client';
 import { AdurcModelUntyped } from './interfaces/client/model';
-import { AdurcSchemaBuilder } from './interfaces/context';
 import { IAdurcLogger, LogLevel } from './interfaces/logger';
+import { AdurcSchemaBuilder } from './schema.builder';
 
 export class AdurcBuilder {
 
