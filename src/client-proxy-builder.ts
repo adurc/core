@@ -244,7 +244,7 @@ export class AdurcClientBuilder {
 
         if ('include' in args) {
             for (const fieldName in args.include) {
-                const field = model.fields.find(x => x.name === fieldName);
+                const field = model.fields.find(x => x.accessorName === fieldName);
                 const type = field.type as AdurcFieldReference;
                 const subModel = this._mapModels.get(type.source).get(type.model);
 
