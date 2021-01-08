@@ -23,7 +23,7 @@ export class AdurcConsoleLogger implements IAdurcLogger {
 
     private print(color: number, message: string, context?: unknown) {
         const contextPrint = context ? '\n\t' + JSON.stringify(context, buildSafeReplacer()) : '';
-        process.stdout.write(`\x1b[${color}m${this.now()} ${message}\x1b[0m${contextPrint}`);
+        process.stdout.write(`\x1b[${color}m${this.now()} ${message}\x1b[0m${contextPrint}\n`);
     }
 
     debug(message: string, context?: unknown): void {
