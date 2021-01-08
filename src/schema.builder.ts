@@ -1,4 +1,3 @@
-import camelcase from 'camelcase';
 import { Adurc, AdurcLogger } from '.';
 import { AdurcDirectiveDefinition } from './interfaces/directive-definition';
 import { AdurcMiddleware } from './interfaces/middleware';
