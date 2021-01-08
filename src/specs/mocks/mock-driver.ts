@@ -10,10 +10,6 @@ import { AdurcDriver } from '../../interfaces/driver';
 import { AdurcModel } from '../../interfaces/model';
 
 class MockDriver implements AdurcDriver {
-
-    init(): Promise<void> {
-        return Promise.resolve();
-    }
     createMany(_model: AdurcModel, _args: AdurcCreateArgs): Promise<BatchResult> {
         return Promise.resolve({ count: 0, returning: [] });
     }

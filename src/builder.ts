@@ -3,18 +3,18 @@ import { AdurcClientBuilder } from './client-proxy-builder';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
 import { Adurc } from './interfaces/client';
 import { AdurcModelUntyped } from './interfaces/client/model';
-import { AdurcContextBuilder } from './interfaces/context';
+import { AdurcSchemaBuilder } from './interfaces/context';
 import { IAdurcLogger, LogLevel } from './interfaces/logger';
 
 export class AdurcBuilder {
 
     private _builders: BuilderGeneratorFunction[];
 
-    private _context: AdurcContextBuilder;
+    private _context: AdurcSchemaBuilder;
 
     constructor() {
         this._builders = [];
-        this._context = new AdurcContextBuilder();
+        this._context = new AdurcSchemaBuilder();
     }
 
     public setLogger(logger: IAdurcLogger): AdurcBuilder {
@@ -35,7 +35,8 @@ export class AdurcBuilder {
     public async build<T = Record<string, AdurcModelUntyped>>(): Promise<Adurc<T>> {
 
         const generators: BuilderGenerator[] = [];
-
+        const proxyClient = new AdurcClientBuilder(this._context);
+        
         for (const builder of this._builders) {
             const result = builder(this._context);
             if (result instanceof Object) {
@@ -64,7 +65,6 @@ export class AdurcBuilder {
                 this._context.logger.debug('[adurc] validating context');
                 this.validateContext();
                 this._context.logger.debug('[adurc] generating proxy client');
-                const proxyClient = new AdurcClientBuilder(this._context);
                 this._context.setAdurc(proxyClient.generateProxyClient());
             }
 

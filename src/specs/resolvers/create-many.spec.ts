@@ -32,7 +32,7 @@ describe('resolver create many tests', () => {
 
         driver.createMany = jest.fn(driver.createMany.bind(driver));
 
-        await adurc.user.createMany(args);
+        await adurc.client.user.createMany(args);
 
         expect(driver.createMany).toHaveBeenCalledTimes(1);
         expect(driver.createMany).toHaveBeenCalledWith(adurcUserModel, args);

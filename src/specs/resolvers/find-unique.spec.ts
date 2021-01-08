@@ -33,7 +33,7 @@ describe('resolver find unique tests', () => {
 
         driver.findMany = jest.fn(driver.findMany.bind(driver));
 
-        await adurc.user.findUnique(args);
+        await adurc.client.user.findUnique(args);
 
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, {

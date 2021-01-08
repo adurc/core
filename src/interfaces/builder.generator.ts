@@ -1,4 +1,4 @@
-import { AdurcContextBuilder } from './context';
+import { AdurcSchemaBuilder } from './context';
 
 export enum BuilderStage {
     OnInit = 1,
@@ -7,4 +7,4 @@ export enum BuilderStage {
 
 export type BuilderGenerator = Generator<BuilderStage, void> | AsyncGenerator<BuilderStage, void>;
 
-export type BuilderGeneratorFunction = (builder: AdurcContextBuilder) => BuilderGenerator | void | Promise<void>;
+export type BuilderGeneratorFunction = (builder: AdurcSchemaBuilder) => BuilderGenerator | void | Promise<void>;

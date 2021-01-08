@@ -34,7 +34,7 @@ describe('resolver delete many tests', () => {
 
         driver.deleteMany = jest.fn(driver.deleteMany.bind(driver));
 
-        await adurc.user.deleteMany(args);
+        await adurc.client.user.deleteMany(args);
 
         expect(driver.deleteMany).toHaveBeenCalledTimes(1);
         expect(driver.deleteMany).toHaveBeenCalledWith(adurcUserModel, args);

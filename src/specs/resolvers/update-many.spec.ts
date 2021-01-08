@@ -35,7 +35,7 @@ describe('resolver update many tests', () => {
 
         driver.updateMany = jest.fn(driver.updateMany.bind(driver));
 
-        await adurc.user.updateMany(args);
+        await adurc.client.user.updateMany(args);
 
         expect(driver.updateMany).toHaveBeenCalledTimes(1);
         expect(driver.updateMany).toHaveBeenCalledWith(adurcUserModel, args);

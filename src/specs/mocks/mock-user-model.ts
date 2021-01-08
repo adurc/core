@@ -17,11 +17,11 @@ export const adurcUserModel: AdurcModel = {
     source: 'mock',
     directives: [],
     fields: [
-        { name: 'id', type: 'int', nonNull: true, directives: [], collection: false, },
-        { name: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
-        { name: 'email', type: 'string', nonNull: true, directives: [], collection: false, },
-        { name: 'age', type: 'int', nonNull: true, directives: [], collection: false, },
-        { name: 'posts', type: { model: 'Post', source: 'mock' }, nonNull: true, directives: [], collection: true, },
-        { name: 'profile', type: { model: 'Profile', source: 'mock' }, nonNull: false, directives: [], collection: false, },
+        { name: 'id', accessorName: 'id', type: 'int', nonNull: true, directives: [], collection: false, },
+        { name: 'name', accessorName: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'email', accessorName: 'email', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'age', accessorName: 'age', type: 'int', nonNull: true, directives: [], collection: false, },
+        { name: 'posts', accessorName: 'posts', type: { model: 'Post', source: 'mock' }, nonNull: true, directives: [], collection: true, },
+        { name: 'profile', accessorName: 'profile', type: { model: 'Profile', source: 'mock' }, nonNull: false, directives: [], collection: false, },
     ],
 };

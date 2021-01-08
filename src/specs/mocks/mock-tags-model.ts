@@ -11,8 +11,8 @@ export const adurcTagModel: AdurcModel = {
     source: 'mock2',
     directives: [],
     fields: [
-        { name: 'id', type: 'int', nonNull: true, directives: [], collection: false, },
-        { name: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
-        { name: 'userId', type: 'int', nonNull: true, directives: [], collection: false, },
+        { name: 'id', accessorName: 'id', type: 'int', nonNull: true, directives: [], collection: false, },
+        { name: 'name', accessorName: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'userId', accessorName: 'userId', type: 'int', nonNull: true, directives: [], collection: false, },
     ],
 };

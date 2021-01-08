@@ -144,4 +144,23 @@ describe('arduc builder tests', () => {
         await builder.build();
     });
 
+
+    it('expose adurc schema', async () => {
+        const builder = new AdurcBuilder();
+
+        builder.use(function (context) {
+            context.addSource({ name: 'mock', driver: new MockDriver() });
+            context.addDirective({ composition: 'model', name: 'model', provider: 'adurc', args: { name: { type: 'string' } } });
+            context.addDirective({ composition: 'field', name: 'field', provider: 'adurc', args: { name: { type: 'string' } } });
+            context.addModel(adurcUserWithDirectiveModel);
+        });
+
+        const adurc = await builder.build();
+
+        expect(adurc.schema).toBeDefined();
+        expect(adurc.schema.models).toHaveLength(1);
+        expect(adurc.schema.directives).toHaveLength(2);
+        expect(adurc.schema.sources).toHaveLength(1);
+    });
+
 });

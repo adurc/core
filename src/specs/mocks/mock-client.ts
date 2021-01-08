@@ -1,10 +1,9 @@
-import { AdurcModelUntyped } from '../../interfaces/client/model';
 import { Adurc } from '../../interfaces/client';
 import { AdurcMockModels } from './mock-models';
 
-const unknownClient: Adurc<Record<string, AdurcModelUntyped>> = null;
+const adurcUntyped: Adurc = null;
 
-unknownClient['user'].findMany({
+adurcUntyped['user'].findMany({
     select: {
         published: true,
     },
@@ -20,15 +19,15 @@ unknownClient['user'].findMany({
     }
 });
 
-unknownClient.user.findMany({
+adurcUntyped.client.user.findMany({
     orderBy: {
         email: 'asc',
     },
 });
 
-const client: Adurc<AdurcMockModels> = null;
+const adurc: Adurc<AdurcMockModels> = null;
 
-client.post.findMany({
+adurc.client.post.findMany({
     select: {
         published: true
     },
@@ -46,7 +45,7 @@ client.post.findMany({
     },
 });
 
-client.user.createMany({
+adurc.client.user.createMany({
     data: [{
         name: 'pep',
         posts: {
@@ -58,7 +57,7 @@ client.user.createMany({
 });
 
 
-client.post.createMany({
+adurc.client.post.createMany({
     data: [{
         title: 'demo',
         content: 'demo',
@@ -67,7 +66,7 @@ client.post.createMany({
     }],
 });
 
-client.post.updateMany({
+adurc.client.post.updateMany({
     where: { id: 1 },
     set: {
         published: true,
@@ -79,19 +78,19 @@ client.post.updateMany({
     },
 });
 
-client.post.deleteMany({
+adurc.client.post.deleteMany({
     where: {
         id: 1,
     },
 });
 
-client.user.findMany({
+adurc.client.user.findMany({
     orderBy: {
         email: 'asc',
     },
 });
 
-client.user.findMany({
+adurc.client.user.findMany({
     where: {
         email: {
             endsWith: 'adurc.io',
@@ -104,14 +103,14 @@ client.user.findMany({
     },
 });
 
-client.post.findMany({
+adurc.client.post.findMany({
     where: {
         author: { email: 'bob@adurc.io' },
         title: { startsWith: 'Hello' },
     },
 });
 
-client.user.createMany({
+adurc.client.user.createMany({
     data: [{
         email: 'alice@adurc.io',
         profile: {
@@ -120,7 +119,7 @@ client.user.createMany({
     }],
 });
 
-client.user.createMany({
+adurc.client.user.createMany({
     data: [{
         email: 'alice@adurc.io',
         profile: {
@@ -136,13 +135,13 @@ client.user.createMany({
     }],
 });
 
-client.user.aggregate({
+adurc.client.user.aggregate({
     avg: {
         age: true,
     },
 });
 
-client.user.findMany({
+adurc.client.user.findMany({
     where: { id: 1 },
     include: {
         posts: {

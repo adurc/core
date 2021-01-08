@@ -27,8 +27,9 @@ export type AdurcFieldReference = {
 
 export interface AdurcField {
     name: string;
+    accessorName: string;
     type: AdurcPrimitiveDefinition | AdurcFieldReference;
-    collection: boolean;
     nonNull: boolean;
+    collection: boolean;
     directives: AdurcDirective[];
 }

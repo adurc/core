@@ -29,7 +29,7 @@ describe('resolver aggregate tests', () => {
 
         driver.aggregate = jest.fn(driver.aggregate.bind(driver));
 
-        await adurc.user.aggregate(args);
+        await adurc.client.user.aggregate(args);
 
         expect(driver.aggregate).toHaveBeenCalledTimes(1);
         expect(driver.aggregate).toHaveBeenCalledWith(adurcUserModel, args);

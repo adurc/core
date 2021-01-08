@@ -74,12 +74,12 @@ export type AdurcModelWhereTyped<T, K extends keyof T = keyof T> = {
     NOT?: AdurcModelWhereTyped<T>[];
 }
 
-export type AdurcModelWhereUntyped = {
-    [field: string]: string | AdurcModelWhereString | number | AdurcModelWhereInt | boolean | AdurcModelWhereBoolean | Date | AdurcModelWhereDate | AdurcModelWhereUntyped | AdurcModelWhereRelationUntyped;
+export type AdurcModelWhereUntyped<TContext = Record<string, unknown>> = {
+    [field: string]: string | AdurcModelWhereString | number | AdurcModelWhereInt | boolean | AdurcModelWhereBoolean | Date | AdurcModelWhereDate | AdurcModelWhereUntyped<TContext> | AdurcModelWhereRelationUntyped;
 } & {
-    AND?: AdurcModelWhereUntyped[];
-    OR?: AdurcModelWhereUntyped[];
-    NOT?: AdurcModelWhereUntyped[];
+    AND?: AdurcModelWhereUntyped<TContext>[];
+    OR?: AdurcModelWhereUntyped<TContext>[];
+    NOT?: AdurcModelWhereUntyped<TContext>[];
 }
 
 export type AdurcModelWhere<T> = T extends Record<string, unknown> ? AdurcModelWhereUntyped : AdurcModelWhereTyped<T>;
