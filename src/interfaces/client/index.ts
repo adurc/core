@@ -1,4 +1,4 @@
-import { AdurcSchema } from '../context';
+import { AdurcSchema } from '../schema';
 import { AdurcMethods } from './methods';
 import { AdurcModelUntyped } from './model';
 

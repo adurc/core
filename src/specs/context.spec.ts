@@ -25,4 +25,39 @@ describe('adurc context execution', () => {
         expect(contextualized1.context).toEqual(context1);
         expect(contextualized2.context).toEqual({ ...context1, ...context2 });
     });
+
+    it('send context to middleware', async () => {
+        const builder = new AdurcBuilder();
+        let receivedContext: Record<string, unknown> = null;
+
+        builder.use(MockBuilderGenerator);
+
+        builder.use(function (ctx) {
+            ctx.addMiddleware({
+                action: async (req, next) => {
+                    receivedContext = req.ctx;
+                    await next();
+                },
+            });
+        });
+
+        const adurc = await builder.build<AdurcMockModels>();
+
+        const context = {
+            user: { id: 1, name: 'adurcariano' },
+        };
+
+        const adurcCtx = adurc.withContext(context);
+
+        await adurcCtx.client.user.findMany({
+            select: {
+                id: true,
+                name: true,
+            }
+        });
+
+        expect(adurc.context).toEqual({});
+        expect(adurcCtx.context).toEqual(context);
+        expect(receivedContext).toEqual(context);
+    });
 });

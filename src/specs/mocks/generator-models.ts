@@ -1,4 +1,4 @@
-import { AdurcSchemaBuilder } from '../../interfaces/context';
+import { AdurcSchemaBuilder } from '../../schema.builder';
 import MockDriver from './mock-driver';
 import { adurcPostModel } from './mock-post-model';
 import { adurcProfileModel } from './mock-profile-model';

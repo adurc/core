@@ -4,10 +4,17 @@ import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodC
 import { AdurcModelSelect } from './interfaces/client/select';
 import { AdurcModel, AdurcFieldReferenceRelation, AdurcFieldReference } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
-import { AdurcSchema } from './interfaces/context';
+import { AdurcSchema } from './interfaces/schema';
 import { Adurc } from '.';
 import { AdurcMiddleware, AdurcMiddlewareRequest } from './interfaces/middleware';
 import { AdurcSchemaBuilder } from './schema.builder';
+import { AdurcAggregateArgs } from './interfaces/client/aggregate.args';
+import { AggregateResult } from './interfaces/client/aggregate.result';
+import { AdurcCreateArgs } from './interfaces/client/create.args';
+import { BatchResult } from './interfaces/client/batch.result';
+import { AdurcDeleteArgs } from './interfaces/client/delete.args';
+import { AdurcFindUniqueArgs } from './interfaces/client/find-first.args';
+import { AdurcUpdateArgs } from './interfaces/client/update.args';
 
 type FindStrategyRelation = {
     path: string,
@@ -22,202 +29,224 @@ type FindStrategy = {
     relations: FindStrategyRelation[];
 };
 
-function withContextBuilder(ctx: Readonly<Record<string, unknown>>) {
-    const adurcCtx: Adurc = {
-        ...this,
-    };
-    adurcCtx.context = { ...this.context, ...ctx };
-    adurcCtx.withContext = withContextBuilder.bind(adurcCtx);
-    return adurcCtx;
-}
-
 export class AdurcClientBuilder {
     private _mapSources: Map<string, AdurcSource>;
     private _mapModels: Map<string, Map<string, AdurcModel>>;
-    private _adurc: Adurc;
+    // private _adurc: Adurc;
 
-    constructor(private context: AdurcSchemaBuilder) {
+    constructor(
+        private schema: AdurcSchemaBuilder,
+    ) {
         this._mapSources = new Map();
         this._mapModels = new Map();
     }
 
+    private withContextBuilder(adurc: Adurc) {
+        return (ctx: Readonly<Record<string, unknown>>) => {
+            const adurcCtx: Adurc = {
+                ...adurc,
+                client: {
+                    ...adurc.client,
+                },
+                context: {
+                    ...adurc.context,
+                    ...ctx,
+                },
+            };
+
+            adurcCtx.withContext = this.withContextBuilder(adurcCtx) as never;
+
+            this.generateProxyModels(adurcCtx);
+
+            return adurcCtx;
+        };
+    }
+
     public generateProxyClient(): Adurc {
         const schema: AdurcSchema = {
-            models: this.context.models,
-            directives: this.context.directives,
-            sources: this.context.sources,
-            middlewares: this.context.middlewares,
+            models: this.schema.models,
+            directives: this.schema.directives,
+            sources: this.schema.sources,
+            middlewares: this.schema.middlewares,
         };
 
-        this._adurc = {
+        for (const source of this.schema.sources) {
+            this._mapSources.set(source.name, source);
+            this._mapModels.set(source.name, new Map());
+        }
+
+        const adurc: Adurc = {
             schema: schema,
             context: {},
             withContext: null,
             client: {},
         };
 
-        this._adurc.withContext = withContextBuilder.bind(this._adurc);
+        adurc.withContext = this.withContextBuilder(adurc) as never;
 
-        for (const source of this.context.sources) {
-            this._mapSources.set(source.name, source);
-            this._mapModels.set(source.name, new Map());
-        }
+        this.generateProxyModels(adurc);
 
-        for (const model of this.context.models) {
-            const map = this._mapModels.get(model.source);
-            map.set(model.name, model);
-            this._adurc.client[model.accessorName] = this.generateProxyModel(model);
-        }
-
-        return this._adurc;
+        return adurc;
     }
 
-    private generateProxyModel(model: AdurcModel): AdurcMethods {
+    private generateProxyModels(adurc: Adurc) {
+        for (const model of this.schema.models) {
+            const map = this._mapModels.get(model.source);
+            map.set(model.name, model);
+            adurc.client[model.accessorName] = this.generateProxyModel(adurc, model);
+        }
+    }
+
+    private generateProxyModel(adurc: Adurc, model: AdurcModel): AdurcMethods {
         return {
-            aggregate: this.generateProxyMethodAggregate(model),
-            findUnique: this.generateProxyMethodFindUnique(model),
-            findMany: this.generateProxyMethodFindMany(model),
-            createMany: this.generateProxyMethodCreateMany(model),
-            updateMany: this.generateProxyMethodUpdateMany(model),
-            deleteMany: this.generateProxyMethodDeleteMany(model),
+            aggregate: this.generateProxyMethodAggregate(adurc, model),
+            findUnique: this.generateProxyMethodFindUnique(adurc, model),
+            findMany: this.generateProxyMethodFindMany(adurc, model),
+            createMany: this.generateProxyMethodCreateMany(adurc, model),
+            updateMany: this.generateProxyMethodUpdateMany(adurc, model),
+            deleteMany: this.generateProxyMethodDeleteMany(adurc, model),
         };
     }
 
-    private generateProxyMethodAggregate(model: AdurcModel): AdurcMethodAggregate {
+    private generateProxyMethodAggregate(adurc: Adurc, model: AdurcModel): AdurcMethodAggregate {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.Aggregate);
 
-        return async (args) => {
+        return async function (args: AdurcAggregateArgs): Promise<AggregateResult> {
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.Aggregate,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
             const results = await source.driver.aggregate(model, args);
 
             await middlewareResolver(results);
 
             return results;
-        };
+        }.bind(adurc);
     }
 
-    private generateProxyMethodCreateMany(model: AdurcModel): AdurcMethodCreateMany {
+    private generateProxyMethodCreateMany(adurc: Adurc, model: AdurcModel): AdurcMethodCreateMany {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.CreateMany);
 
-        return async (args) => {
+        return async function (args: AdurcCreateArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.CreateMany,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
             const results = await source.driver.createMany(model, args);
 
             await middlewareResolver(results);
 
             return results;
-        };
+        }.bind(adurc);
     }
 
-    private generateProxyMethodDeleteMany(model: AdurcModel): AdurcMethodDeleteMany {
+    private generateProxyMethodDeleteMany(adurc: Adurc, model: AdurcModel): AdurcMethodDeleteMany {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.DeleteMany);
 
-        return async (args) => {
+        return async function (args: AdurcDeleteArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.DeleteMany,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
             const results = await source.driver.deleteMany(model, args);
 
             await middlewareResolver(results);
 
             return results;
-        };
+        }.bind(adurc);
     }
 
-    private generateProxyMethodFindUnique(model: AdurcModel): AdurcMethodFindUnique {
+    private generateProxyMethodFindUnique(adurc: Adurc, model: AdurcModel): AdurcMethodFindUnique {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.FindUnique);
+        const $resolveFindStrategy = this.resolveFindStrategy.bind(this);
+        const $findRecursiveNestedIncludes = this.findRecursiveNestedIncludes.bind(this);
 
-        return async (args) => {
-            const strategy = this.findRecursiveNestedIncludes(model, { ...args, take: 1 });
+        return async function (args: AdurcFindUniqueArgs): Promise<Record<string, unknown>> {
+            const strategy = $findRecursiveNestedIncludes(model, { ...args, take: 1 });
 
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.FindUnique,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
-            const results: Record<string, unknown>[] = await this.resolveFindStrategy(source, model, args, strategy) as Record<string, unknown>[];
+            const results: Record<string, unknown>[] = await $resolveFindStrategy(this, source, model, args, strategy) as Record<string, unknown>[];
             const result = results.length > 0 ? results[0] : null;
 
             await middlewareResolver(result);
 
             return result;
-        };
+        }.bind(adurc);
     }
 
-    private generateProxyMethodFindMany(model: AdurcModel): AdurcMethodFindMany {
+    private generateProxyMethodFindMany(adurc: Adurc, model: AdurcModel): AdurcMethodFindMany {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.FindMany);
+        const $resolveFindStrategy = this.resolveFindStrategy.bind(this);
+        const $findRecursiveNestedIncludes = this.findRecursiveNestedIncludes.bind(this);
 
-        return async (args) => {
-            const strategy = this.findRecursiveNestedIncludes(model, args);
+        return async function (args: AdurcFindManyArgs): Promise<Record<string, unknown>[]> {
+            const strategy = $findRecursiveNestedIncludes(model, args);
 
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.FindMany,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
-            const results: Record<string, unknown>[] = await this.resolveFindStrategy(source, model, args, strategy) as Record<string, unknown>[];
+            const results: Record<string, unknown>[] = await $resolveFindStrategy(this, source, model, args, strategy) as Record<string, unknown>[];
 
             await middlewareResolver(results);
 
             return results;
-        };
+        }.bind(adurc);
     }
 
-    private generateProxyMethodUpdateMany(model: AdurcModel): AdurcMethodUpdateMany {
+    private generateProxyMethodUpdateMany(adurc: Adurc, model: AdurcModel): AdurcMethodUpdateMany {
         const source = this.getSource(model.source);
         const middlewares = this.getMiddlewares(model, AdurcMethod.UpdateMany);
 
-        return async (args) => {
+        return async function (args: AdurcUpdateArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
                 args,
-                ctx: this._adurc.context,
+                ctx: this.context,
                 method: AdurcMethod.UpdateMany,
                 model,
             };
 
-            const middlewareResolver = await this.startMiddlewares(middlewares, req);
+            const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
             const results = await source.driver.updateMany(model, args);
 
             await middlewareResolver(results);
 
             return results;
-        };
+        }.bind(adurc);
     }
 
     private getSource(name: string) {
@@ -231,7 +260,7 @@ export class AdurcClientBuilder {
     }
 
     private getMiddlewares(model: AdurcModel, method: AdurcMethod) {
-        return this.context.middlewares.filter(x =>
+        return this.schema.middlewares.filter(x =>
             (!x.model || (x.model.source === model.source && x.model.name === model.name))
             && (!x.method || ((x.method & method) === method))
         );
@@ -273,7 +302,7 @@ export class AdurcClientBuilder {
         return { args: newArgs, relations: output };
     }
 
-    private async startMiddlewares(middlewares: AdurcMiddleware[], req: AdurcMiddlewareRequest) {
+    private static async startMiddlewares(middlewares: AdurcMiddleware[], req: AdurcMiddlewareRequest) {
         let middlewareNextResolver: (data: unknown) => void;
         const nextPromise = new Promise<unknown>((resolve, _reject) => { middlewareNextResolver = resolve; });
 
@@ -298,6 +327,7 @@ export class AdurcClientBuilder {
     }
 
     private async resolveFindStrategy(
+        adurc: Adurc,
         source: AdurcSource,
         model: AdurcModel,
         args: AdurcFindManyArgs,
@@ -320,7 +350,7 @@ export class AdurcClientBuilder {
                 }
             };
 
-            const subResults = await this._adurc.client[sub.modelAccessorName].findMany(nestedArgs);
+            const subResults = await adurc.client[sub.modelAccessorName].findMany(nestedArgs);
 
             for (const result of results) {
                 if (sub.collection) {
