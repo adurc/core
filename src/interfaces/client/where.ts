@@ -1,5 +1,7 @@
 import { PrimitiveType } from './common';
 
+export type SpecialWhereKeys = 'AND' | 'OR' | 'NOT';
+
 export type AdurcModelWhereRelationTyped<T> = {
     every?: AdurcModelWhereTyped<T>;
     some?: AdurcModelWhereTyped<T>;
@@ -74,12 +76,27 @@ export type AdurcModelWhereTyped<T, K extends keyof T = keyof T> = {
     NOT?: AdurcModelWhereTyped<T>[];
 }
 
-export type AdurcModelWhereUntyped<TContext = Record<string, unknown>> = {
-    [field: string]: string | AdurcModelWhereString | number | AdurcModelWhereInt | boolean | AdurcModelWhereBoolean | Date | AdurcModelWhereDate | AdurcModelWhereUntyped<TContext> | AdurcModelWhereRelationUntyped;
-} & {
-    AND?: AdurcModelWhereUntyped<TContext>[];
-    OR?: AdurcModelWhereUntyped<TContext>[];
-    NOT?: AdurcModelWhereUntyped<TContext>[];
-}
+// export type AdurcModelWhereUntyped<T = Record<string, unknown>, K extends keyof T = keyof T> = {
+//     [P in K]?: K extends keyof SpecialWhereKeys
+//     ? AdurcModelWhereUntyped<T[P]>[]
+//     : {
+//         [field: string]: string | AdurcModelWhereString | number | AdurcModelWhereInt | boolean | AdurcModelWhereBoolean | Date | AdurcModelWhereDate | AdurcModelWhereUntyped<T[P]> | AdurcModelWhereRelationUntyped
+//     }
+// };
+
+export type AdurcModelWhereUntyped = (
+    {
+        AND?: AdurcModelWhereUntyped[];
+        OR?: AdurcModelWhereUntyped[];
+        NOT?: AdurcModelWhereUntyped[];
+
+        [field: string]: string | AdurcModelWhereString
+        | number | AdurcModelWhereInt
+        | boolean | AdurcModelWhereBoolean
+        | Date | AdurcModelWhereDate
+        | AdurcModelWhereUntyped | AdurcModelWhereRelationUntyped
+        | AdurcModelWhereUntyped[];
+    }
+)
 
 export type AdurcModelWhere<T> = T extends Record<string, unknown> ? AdurcModelWhereUntyped : AdurcModelWhereTyped<T>;

@@ -3,7 +3,7 @@ import { AdurcMockModels } from './mock-models';
 
 const adurcUntyped: Adurc = null;
 
-adurcUntyped['user'].findMany({
+adurcUntyped.client['user'].findMany({
     select: {
         published: true,
     },
@@ -20,6 +20,11 @@ adurcUntyped['user'].findMany({
 });
 
 adurcUntyped.client.user.findMany({
+    where: {
+        AND: [
+            { name: 'Adurc' },
+        ],
+    },
     orderBy: {
         email: 'asc',
     },
