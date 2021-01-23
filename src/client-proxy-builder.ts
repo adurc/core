@@ -1,6 +1,6 @@
 import v8 from 'v8';
 import { AdurcFindManyArgs } from './interfaces/client/find-many.args';
-import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodCreateMany, AdurcMethodDeleteMany, AdurcMethodFindMany, AdurcMethodUpdateMany, AdurcMethod } from './interfaces/client/methods';
+import { AdurcMethods, AdurcMethodFindUnique, AdurcMethodAggregate, AdurcMethodCreateMany, AdurcMethodDeleteMany, AdurcMethodFindMany, AdurcMethodUpdateMany, AdurcMethod, AdurcMethodFlags } from './interfaces/client/methods';
 import { AdurcModelSelect } from './interfaces/client/select';
 import { AdurcModel, AdurcFieldReferenceRelation, AdurcFieldReference } from './interfaces/model';
 import { AdurcSource } from './interfaces/source';
@@ -112,7 +112,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodAggregate(adurc: Adurc, model: AdurcModel): AdurcMethodAggregate {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.Aggregate);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.Aggregate);
 
         return async function (args: AdurcAggregateArgs): Promise<AggregateResult> {
             const req: AdurcMiddlewareRequest = {
@@ -134,7 +134,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodCreateMany(adurc: Adurc, model: AdurcModel): AdurcMethodCreateMany {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.CreateMany);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.CreateMany);
 
         return async function (args: AdurcCreateArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
@@ -156,7 +156,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodDeleteMany(adurc: Adurc, model: AdurcModel): AdurcMethodDeleteMany {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.DeleteMany);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.DeleteMany);
 
         return async function (args: AdurcDeleteArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
@@ -178,7 +178,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodFindUnique(adurc: Adurc, model: AdurcModel): AdurcMethodFindUnique {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.FindUnique);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.FindUnique);
         const $resolveFindStrategy = this.resolveFindStrategy.bind(this);
         const $findRecursiveNestedIncludes = this.findRecursiveNestedIncludes.bind(this);
 
@@ -205,7 +205,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodFindMany(adurc: Adurc, model: AdurcModel): AdurcMethodFindMany {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.FindMany);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.FindMany);
         const $resolveFindStrategy = this.resolveFindStrategy.bind(this);
         const $findRecursiveNestedIncludes = this.findRecursiveNestedIncludes.bind(this);
 
@@ -231,7 +231,7 @@ export class AdurcClientBuilder {
 
     private generateProxyMethodUpdateMany(adurc: Adurc, model: AdurcModel): AdurcMethodUpdateMany {
         const source = this.getSource(model.source);
-        const middlewares = this.getMiddlewares(model, AdurcMethod.UpdateMany);
+        const middlewares = this.getMiddlewares(model, AdurcMethodFlags.UpdateMany);
 
         return async function (args: AdurcUpdateArgs): Promise<BatchResult> {
             const req: AdurcMiddlewareRequest = {
@@ -261,11 +261,32 @@ export class AdurcClientBuilder {
         return source;
     }
 
-    private getMiddlewares(model: AdurcModel, method: AdurcMethod) {
-        return this.schema.middlewares.filter(x =>
-            (!x.model || (x.model.source === model.source && x.model.name === model.name))
-            && (!x.method || ((x.method & method) === method))
-        );
+    private getMiddlewares(model: AdurcModel, method: AdurcMethodFlags) {
+        return this.schema.middlewares.filter(x => {
+            let ok = true;
+
+            if ('model' in x) {
+                const modelsContraint = x.model instanceof Array ? x.model : [x.model];
+                ok = ok && (modelsContraint.length === 0 || modelsContraint.findIndex(m => m.source === model.source && m.name === model.name) >= 0);
+            }
+
+            if ('method' in x) {
+                ok = ok && (x.method & method) === method;
+            }
+
+            if ('directive' in x) {
+                const directivesContraint = x.directive instanceof Array ? x.directive : [x.directive];
+                ok = ok && (
+                    directivesContraint.length === 0
+                    || directivesContraint.findIndex(m =>
+                        model.directives.findIndex(d => d.provider === m.provider && d.name === m.name) >= 0
+                        || model.fields.findIndex(f => f.directives.findIndex(d => d.provider === m.provider && d.name === m.name) >= 0) >= 0
+                    ) >= 0
+                );
+            }
+
+            return ok;
+        });
     }
 
     private findRecursiveNestedIncludes(model: AdurcModel, args: AdurcFindManyArgs): FindStrategy {

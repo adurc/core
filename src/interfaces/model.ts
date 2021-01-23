@@ -6,12 +6,23 @@ export interface AdurcDirective {
     args: AdurcObject;
 }
 
+
+export interface AdurcDirectiveReference {
+    provider: string;
+    name: string;
+}
+
 export interface AdurcModel {
     source: string;
     name: string;
     accessorName: string;
     fields: AdurcField[];
     directives: AdurcDirective[];
+}
+
+export interface AdurcModelReference {
+    source: string;
+    name: string;
 }
 
 export type AdurcFieldReferenceRelation = {

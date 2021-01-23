@@ -119,4 +119,27 @@ describe('adurc middleware tests', () => {
 
         expect(callsMiddleware).toEqual(2);
     });
+
+    it('middleware constraint directive', async () => {
+        const builder = new AdurcBuilder();
+        let callsMiddleware = 0;
+
+        builder.use(MockBuilderGenerator);
+        builder.use(function (schema) {
+            schema.addMiddleware({
+                directive: { name: 'isEmail', provider: 'validation' },
+                action: async (req, next) => {
+                    callsMiddleware++;
+                    await next();
+                },
+            });
+        });
+
+        const adurc = await builder.build<AdurcMockModels>();
+
+        await adurc.client.user.findMany({ select: { id: true, name: true } });
+        await adurc.client.post.findMany({ select: { id: true, title: true } });
+
+        expect(callsMiddleware).toEqual(1);
+    });
 });

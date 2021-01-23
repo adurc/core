@@ -1,4 +1,3 @@
-import { BuilderStage } from '../interfaces/builder.generator';
 import { AdurcDirectiveDefinition } from '../interfaces/directive-definition';
 import { AdurcDirective, AdurcModel } from '../interfaces/model';
 import { AdurcSchemaBuilder } from '../schema.builder';

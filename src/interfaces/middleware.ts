@@ -1,11 +1,11 @@
 import { AdurcMethod, AdurcMethodFlags } from './client/methods';
-import { AdurcModel } from './model';
+import { AdurcDirectiveReference, AdurcModel, AdurcModelReference } from './model';
 
 export type AdurcMiddlewareRequest = {
     method: AdurcMethod;
-    ctx: Record<string, unknown>,
     model: AdurcModel;
-    args: Record<string, unknown>,
+    ctx: Record<string, unknown>;
+    args: Record<string, unknown>;
 };
 
 export type AdurcMiddlewareNextCallback = () => Promise<unknown>;
@@ -17,6 +17,7 @@ export type AdurcMiddlewareAction = (
 
 export interface AdurcMiddleware {
     method?: AdurcMethodFlags;
-    model?: { source: string, name: string };
+    model?: AdurcModelReference | AdurcModelReference[];
+    directive?: AdurcDirectiveReference | AdurcDirectiveReference[];
     action: AdurcMiddlewareAction;
 }

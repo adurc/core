@@ -17,9 +17,9 @@ export const adurcUserWithDirectiveModel: AdurcModel = {
         args: { name: 'User' },
     }],
     fields: [
-        { name: 'id', type: 'int', nonNull: true, directives: [{ provider: 'adurc', name: 'field', args: { name: 'id' } }], collection: false, },
-        { name: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
-        { name: 'email', type: 'string', nonNull: true, directives: [], collection: false, },
-        { name: 'age', type: 'int', nonNull: true, directives: [], collection: false, },
+        { name: 'id', accessorName: 'id', type: 'int', nonNull: true, directives: [{ provider: 'adurc', name: 'field', args: { name: 'id' } }], collection: false, },
+        { name: 'name', accessorName: 'name', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'email', accessorName: 'email', type: 'string', nonNull: true, directives: [], collection: false, },
+        { name: 'age', accessorName: 'age', type: 'int', nonNull: true, directives: [], collection: false, },
     ],
 };
