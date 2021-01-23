@@ -1,5 +1,7 @@
 
 import { AdurcClientBuilder } from './client-proxy-builder';
+import { AdurcInvalidSetPreviousStageError } from './errors/invalid-set-previous-stage.error';
+import { AdurcBuildValidationError, AdurcModelDirectiveCompositionRestrictionValidationError, AdurcUnknownModelDirectiveBuildValidationError, AdurcUnknownModelSourceBuildValidationError, AdurcValidationContextError } from './errors/validation-context.error';
 import { BuilderGenerator, BuilderGeneratorFunction, BuilderStage } from './interfaces/builder.generator';
 import { Adurc } from './interfaces/client';
 import { AdurcModelUntyped } from './interfaces/client/model';
@@ -36,7 +38,7 @@ export class AdurcBuilder {
 
         const generators: BuilderGenerator[] = [];
         const proxyClient = new AdurcClientBuilder(this._context);
-        
+
         for (const builder of this._builders) {
             const result = builder(this._context);
             if (result instanceof Object) {
@@ -75,7 +77,7 @@ export class AdurcBuilder {
                     if (iterator.value) {
                         nextStage = iterator.value;
                         if (nextStage <= i) {
-                            throw new Error('Register exception trying go to old stage');
+                            throw new AdurcInvalidSetPreviousStageError(stage, nextStage);
                         }
                     }
                     stages[nextStage].push(register);
@@ -87,48 +89,27 @@ export class AdurcBuilder {
     }
 
     private validateContext() {
-        const errors: string[] = [];
+        const errors: AdurcBuildValidationError[] = [];
         for (const model of this._context.models) {
             const source = this._context.sources.find(x => x.name === model.source);
             if (!source) {
-                errors.push(`Model ${model.name} is in source ${model.source} but not found in context`);
+                errors.push(new AdurcUnknownModelSourceBuildValidationError(model));
             }
             for (const directive of model.directives) {
                 const definition = this._context.directives.find(x => x.provider === directive.provider && x.name === directive.name);
 
                 if (!definition) {
-                    errors.push(`Model ${model.name} has unknown directive ${directive.name} of provider ${directive.provider}`);
+                    errors.push(new AdurcUnknownModelDirectiveBuildValidationError(model, directive));
                     continue;
                 }
 
                 if (definition.composition !== 'model') {
-
-                    errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider} on model, but this is restricted to ${definition.composition}`);
-                }
-
-                for (const argDefName in definition.args) {
-                    const argDef = definition.args[argDefName];
-                    const arg = directive.args[argDefName];
-                    if ((arg === undefined || arg === null) && argDef.nonNull === true) {
-                        errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider} without required argument ${argDefName}`);
-                    }
-                    if (arg !== null && arg !== undefined) {
-                        if (typeof argDef.type === 'string') {
-                            switch (argDef.type) {
-                                case 'boolean':
-                                    if (typeof arg !== 'boolean') {
-                                        errors.push(`Model ${model.name} has directive ${directive.name} of provider ${directive.provider}, unexpected argument type`);
-                                    }
-                                    break;
-                                // TODO: Add other types
-                            }
-                        }
-                    }
+                    errors.push(new AdurcModelDirectiveCompositionRestrictionValidationError(model, directive, definition));
                 }
             }
         }
         if (errors.length > 0) {
-            throw new Error('Error in adurc context:\n' + errors.map(x => `\t - ${x}`).join('\n'));
+            throw new AdurcValidationContextError(this._context, errors);
         }
     }
 }

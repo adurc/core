@@ -15,6 +15,8 @@ import { BatchResult } from './interfaces/client/batch.result';
 import { AdurcDeleteArgs } from './interfaces/client/delete.args';
 import { AdurcFindUniqueArgs } from './interfaces/client/find-first.args';
 import { AdurcUpdateArgs } from './interfaces/client/update.args';
+import { AdurcUnknownSourceError } from './errors/unknown-source.error';
+import { AdurcExpectedRelationError } from './errors/expected-relation.error';
 
 type FindStrategyRelation = {
     path: string,
@@ -253,7 +255,7 @@ export class AdurcClientBuilder {
         const source = this._mapSources.get(name);
 
         if (!source) {
-            throw new Error(`Source ${name} not registered`);
+            throw new AdurcUnknownSourceError(name);
         }
 
         return source;
@@ -280,7 +282,7 @@ export class AdurcClientBuilder {
 
                 if (type.source !== model.source || type.relation) {
                     if (!type.relation) {
-                        throw new Error('Expected relation when sources are different');
+                        throw new AdurcExpectedRelationError(model, field);
                     }
                     newArgs.select[type.relation.parentField] = true;
                     output.push({
