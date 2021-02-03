@@ -219,7 +219,7 @@ export class AdurcClientBuilder {
 
             const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
 
-            const strategy = $findRecursiveNestedIncludes(model, args);
+            const strategy = $findRecursiveNestedIncludes(model, req.args);
 
             const results: Record<string, unknown>[] = await $resolveFindStrategy(this, source, model, args, strategy) as Record<string, unknown>[];
 

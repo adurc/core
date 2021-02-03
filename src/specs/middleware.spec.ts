@@ -174,4 +174,34 @@ describe('adurc middleware tests', () => {
         expect(driver.findMany).toHaveBeenCalledTimes(1);
         expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, { select: { id: true, name: true } });
     });
+
+    it('middleware args mutation with assignment', async () => {
+        const builder = new AdurcBuilder();
+        const driver = new MockDriver();
+
+        driver.findMany = jest.fn(driver.findMany);
+
+        builder.use(function (schema) {
+            schema.addModel(adurcUserModel);
+
+            schema.addSource({
+                name: 'mock',
+                driver,
+            });
+
+            schema.addMiddleware({
+                action: async function (req, next) {
+                    req.args = { select: { id: true, name: true } };
+                    await next();
+                },
+            });
+        });
+
+        const adurc = await builder.build<AdurcMockModels>();
+
+        await adurc.client.user.findMany({ select: { name: true } });
+
+        expect(driver.findMany).toHaveBeenCalledTimes(1);
+        expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, { select: { id: true, name: true } });
+    });
 });
