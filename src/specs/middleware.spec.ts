@@ -2,7 +2,9 @@ import { AdurcBuilder } from '..';
 import { AdurcMethodFlags } from '../interfaces/client/methods';
 import { AdurcMiddlewareAction } from '../interfaces/middleware';
 import { MockBuilderGenerator } from './mocks/generator-models';
+import MockDriver from './mocks/mock-driver';
 import { AdurcMockModels } from './mocks/mock-models';
+import { adurcUserModel } from './mocks/mock-user-model';
 
 describe('adurc middleware tests', () => {
 
@@ -141,5 +143,35 @@ describe('adurc middleware tests', () => {
         await adurc.client.post.findMany({ select: { id: true, title: true } });
 
         expect(callsMiddleware).toEqual(1);
+    });
+
+    it('middleware args mutation', async () => {
+        const builder = new AdurcBuilder();
+        const driver = new MockDriver();
+
+        driver.findMany = jest.fn(driver.findMany);
+
+        builder.use(function (schema) {
+            schema.addModel(adurcUserModel);
+
+            schema.addSource({
+                name: 'mock',
+                driver,
+            });
+
+            schema.addMiddleware({
+                action: async function (req, next) {
+                    (req.args.select as Record<string, unknown>).id = true;
+                    await next();
+                },
+            });
+        });
+
+        const adurc = await builder.build<AdurcMockModels>();
+
+        await adurc.client.user.findMany({ select: { name: true } });
+
+        expect(driver.findMany).toHaveBeenCalledTimes(1);
+        expect(driver.findMany).toHaveBeenCalledWith(adurcUserModel, { select: { id: true, name: true } });
     });
 });

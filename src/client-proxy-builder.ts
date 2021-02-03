@@ -210,8 +210,6 @@ export class AdurcClientBuilder {
         const $findRecursiveNestedIncludes = this.findRecursiveNestedIncludes.bind(this);
 
         return async function (args: AdurcFindManyArgs): Promise<Record<string, unknown>[]> {
-            const strategy = $findRecursiveNestedIncludes(model, args);
-
             const req: AdurcMiddlewareRequest = {
                 args,
                 ctx: this.context,
@@ -220,6 +218,8 @@ export class AdurcClientBuilder {
             };
 
             const middlewareResolver = await AdurcClientBuilder.startMiddlewares(middlewares, req);
+
+            const strategy = $findRecursiveNestedIncludes(model, args);
 
             const results: Record<string, unknown>[] = await $resolveFindStrategy(this, source, model, args, strategy) as Record<string, unknown>[];
 
